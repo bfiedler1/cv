@@ -75,3 +75,10 @@ find_unused_assets*.*
 temp
 code_private
 assignments_private
+
+# ============================================================
+# Extras
+# ============================================================ 
+
+/assignments/hw01/files/hw01_output.png
+/assignments/hw01/files/my_image.png
