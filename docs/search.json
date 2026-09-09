@@ -389,7 +389,308 @@
     "href": "lectures/index.html",
     "title": "Lectures",
     "section": "",
-    "text": "Lecture slides and supporting materials will be added here throughout the semester.\nEach lecture is available as an interactive presentation and as a PDF for downloading, printing, or taking notes.\n\n\n\n\n\n\n\n  \n    \n      Lecture 01 — Introduction to Computer Vision\n    \n\n    \n    Course overview, computer vision applications, and important course logistics.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 02 — Image Formation and Digital Images\n    \n\n    \n    Images as signals, sampling, sensor arrays, resolution, quantization, image arrays, color images, and basic Python image representation.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 03 — Image Filtering\n    \n\n    \n    Local image filtering, correlation, convolution, Gaussian and Sobel filters, separability, template matching, and nonlinear median filtering.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n\nNo matching items"
+    "text": "Lecture slides and supporting materials will be added here throughout the semester.\nEach lecture is available as an interactive presentation and as a PDF for downloading, printing, or taking notes.\n\n\n\n\n\n\n\n  \n    \n      Lecture 01 — Introduction to Computer Vision\n    \n\n    \n    Course overview, computer vision applications, and important course logistics.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 02 — Image Formation and Digital Images\n    \n\n    \n    Images as signals, sampling, sensor arrays, resolution, quantization, image arrays, color images, and basic Python image representation.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 03 — Image Filtering\n    \n\n    \n    Local image filtering, correlation, convolution, Gaussian and Sobel filters, separability, template matching, and nonlinear median filtering.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 04 — Image Pyramids\n    \n\n    \n    Image downsampling, aliasing, anti-aliasing, Gaussian image pyramids, Laplacian image pyramids, and multiscale image representations.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n  \n    \n      Lecture 05 — Fourier Transform\n    \n\n    \n    Fourier series, spatial frequency, the discrete Fourier transform, frequency-domain visualization, filtering, convolution, and image sampling.\n    \n\n    \n      \n        View Slides\n      \n      \n        PDF\n      \n    \n  \n\n\nNo matching items"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#learning-objectives",
+    "href": "lectures/04_image_pyramids.html#learning-objectives",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Learning Objectives",
+    "text": "Learning Objectives\nBy the end of this lecture, you should be able to:\n\nExplain why naïve downsampling can create aliasing.\nDescribe how smoothing before downsampling reduces aliasing.\nConstruct and interpret a Gaussian pyramid.\nConstruct and interpret a Laplacian pyramid.\nExplain why Laplacian pyramids are useful for compression and reconstruction.\nRecognize how multi-scale representations appear in applications such as blending, tracking, detail enhancement, steerable pyramids, and wavelets."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#downsampling-image",
+    "href": "lectures/04_image_pyramids.html#downsampling-image",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "",
+    "text": "This image is too big to fit on the screen!\nHow would you reduce it to half its size?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#window-size",
+    "href": "lectures/04_image_pyramids.html#window-size",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Naïve Image Downsampling",
+    "text": "Naïve Image Downsampling\nKeep every other row and column, then repeat.\n\n\n\n\n\n\nimport matplotlib.pyplot as plt\n\ny2 = I[::2, ::2]\ny4 = y2[::2, ::2]\ny8 = y4[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\n\nfor a, y, s in zip(ax, [y2, y4, y8], [2, 4, 8]):\n    a.imshow(y, cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#naïve-image-downsampling",
+    "href": "lectures/04_image_pyramids.html#naïve-image-downsampling",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Naïve Image Downsampling",
+    "text": "Naïve Image Downsampling\n\n\n\n\n\n\n\n\n\nWhy is the 1/8 image so pixelated (and do you know what this effect is called)?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#reminder",
+    "href": "lectures/04_image_pyramids.html#reminder",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Reminder",
+    "text": "Reminder\n\n\n Camera / sensor hardware\n\n CMOS sensor array\n\n\n\n\nImages are a discrete, or sampled, representation of a continuous world."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#sampling",
+    "href": "lectures/04_image_pyramids.html#sampling",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Sampling",
+    "text": "Sampling\nA simple example: a sine wave\n\n\n\n\n\n\n\n\n\nHow would you discretize this signal?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#sampling-1",
+    "href": "lectures/04_image_pyramids.html#sampling-1",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Sampling",
+    "text": "Sampling\nSample the signal at regularly spaced locations."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#sampling-2",
+    "href": "lectures/04_image_pyramids.html#sampling-2",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Sampling",
+    "text": "Sampling\nThe sampled signal consists of discrete values.\n\n\n\n\n\n\n\n\n\nHow many samples should I take?\nCan I take as many samples as I want?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#sampling-3",
+    "href": "lectures/04_image_pyramids.html#sampling-3",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Sampling",
+    "text": "Sampling\nThe sampled signal consists of discrete values.\n\n\n\n\n\n\n\n\n\nHow many samples should I take?\nCan I take as few samples as I want?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#undersampling",
+    "href": "lectures/04_image_pyramids.html#undersampling",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Undersampling",
+    "text": "Undersampling\nWhat happens when we take fewer samples?\n\n\n\n\n\n\n\n\n\nUnsurprising effect: information is lost."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#undersampling-1",
+    "href": "lectures/04_image_pyramids.html#undersampling-1",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Undersampling",
+    "text": "Undersampling\nA different signal can agree with the same samples.\n\n\n\n\n\n\n\n\n\nUnsurprising effect: information is lost.\nSurprising effect: we can confuse the signal with one of lower frequency."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#undersampling-2",
+    "href": "lectures/04_image_pyramids.html#undersampling-2",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Undersampling",
+    "text": "Undersampling\nThe same samples can also match a signal of higher frequency.\n\n\n\n\n\n\n\n\n\nThe samples alone do not uniquely identify the original signal.\nWe need an assumption about its highest frequency."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#aliasing",
+    "href": "lectures/04_image_pyramids.html#aliasing",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Aliasing",
+    "text": "Aliasing\nAliasing: Undersampling disguises a signal as one of a lower frequency."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#aliasing-in-textures",
+    "href": "lectures/04_image_pyramids.html#aliasing-in-textures",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Aliasing in Textures",
+    "text": "Aliasing in Textures"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#aliasing-in-photographs",
+    "href": "lectures/04_image_pyramids.html#aliasing-in-photographs",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Aliasing in Photographs",
+    "text": "Aliasing in Photographs\nThese patterns are also known as moiré patterns.\n\n\n\n\n\n\nStriped fabric\n\n\nBuilding façades\n\n\nAC grille"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#temporal-aliasing",
+    "href": "lectures/04_image_pyramids.html#temporal-aliasing",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Temporal Aliasing",
+    "text": "Temporal Aliasing\n\nThe camera records separate snapshots; we do not see the motion between frames.\nFollow the dot: the wheel is rotating clockwise\n\n\n\n\n\n\n\n\n\n\n\nWithout the dot, the four spokes are indistinguishable.\nA large clockwise step produces the same spoke positions as a small counterclockwise step.\n\nThe wheel can therefore appear to rotate backward—an example of temporal aliasing."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#temporal-aliasing-wagon-wheel-effect",
+    "href": "lectures/04_image_pyramids.html#temporal-aliasing-wagon-wheel-effect",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Temporal Aliasing: Wagon-Wheel Effect",
+    "text": "Temporal Aliasing: Wagon-Wheel Effect"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#temporal-aliasing-helicopter-rotor",
+    "href": "lectures/04_image_pyramids.html#temporal-aliasing-helicopter-rotor",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Temporal Aliasing: Helicopter Rotor",
+    "text": "Temporal Aliasing: Helicopter Rotor"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#anti-aliasing-oversampling",
+    "href": "lectures/04_image_pyramids.html#anti-aliasing-oversampling",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Anti-aliasing: Oversampling",
+    "text": "Anti-aliasing: Oversampling\nHow would you deal with aliasing?\nApproach 1: Use more samples to represent fine detail."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#anti-aliasing-smoothing",
+    "href": "lectures/04_image_pyramids.html#anti-aliasing-smoothing",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Anti-aliasing: Smoothing",
+    "text": "Anti-aliasing: Smoothing\nApproach 2: Smooth the image before downsampling.\n\n\n\n\n\n\n\n\n\nSome fine detail is lost, but aliasing artifacts are reduced.\nHow would you smooth a signal?"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#gaussian-downsampling",
+    "href": "lectures/04_image_pyramids.html#gaussian-downsampling",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Better Image Downsampling",
+    "text": "Better Image Downsampling\nApply a Gaussian filter, then keep every other row and column. Repeat.\n\n\n\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\ny2g = cv2.GaussianBlur(I, (3,3), 2)[::2, ::2]\ny4g = cv2.GaussianBlur(y2g, (3,3), 2)[::2, ::2]\ny8g = cv2.GaussianBlur(y4g, (3,3), 2)[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\nfor a, y, s in zip(ax, [y2g, y4g, y8g], [2, 4, 8]):\n    a.imshow(y, cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()\nplt.close(fig)"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#comparison-of-downsampling-methods",
+    "href": "lectures/04_image_pyramids.html#comparison-of-downsampling-methods",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Comparison of Downsampling Methods",
+    "text": "Comparison of Downsampling Methods\nNaïve Image Downsampling:\n\n\n\n\n\n\n\n\n\nSmoothed Image Downsampling:"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#anti-aliasing-how-much-is-enough",
+    "href": "lectures/04_image_pyramids.html#anti-aliasing-how-much-is-enough",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Anti-aliasing: How Much Is Enough?",
+    "text": "Anti-aliasing: How Much Is Enough?\n\nHow much smoothing is enough?\nHow many samples are enough?\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\nBoth depend on the Nyquist condition:\n\\[\nf_s &gt; 2f_{\\max}\n\\]\n\n\\(f_s\\): sampling rate.\n\\(f_{\\max}\\): highest frequency.\n\n\n\n\nWe’ll see what this means soon."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#why-use-image-pyramids",
+    "href": "lectures/04_image_pyramids.html#why-use-image-pyramids",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Why Use Image Pyramids?",
+    "text": "Why Use Image Pyramids?\n\n\nImage compression\n \n\nTexture mapping\n\n\nImage blending\n\n\nDenoising\n\n\n\n\n\n\n\nFocal stack compositing\n\n\nMultiscale detection\n\n\nMultiscale registration\n\n\n\n\n\nAlso: Optical flow and feature tracking estimate motion from a coarse to fine paradigm."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#gaussian-pyramid",
+    "href": "lectures/04_image_pyramids.html#gaussian-pyramid",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Gaussian Pyramid",
+    "text": "Gaussian Pyramid\nA Gaussian pyramid represents an image at progressively coarser spatial scales.\n\\[\nG_0 = I,\n\\qquad\nG_{i+1} = \\operatorname{downsample}(h_G * G_i)\n\\]\n\n\n\n\n\n\nConstruction\n\n\n\nSmooth the current image using a Gaussian kernel \\(h_G\\).\nDownsample by a factor of 2, e.g., keep every other row and column.\nRepeat until the desired minimum resolution is reached.\n\n\n\n\n\nHow many pixels does \\(G_{i+1}\\) have compared with \\(G_i\\)?\n\n\nApproximately \\(\\frac{1}{4}\\) as many pixels.\n\n\nWhy smooth first?\n\n\nTo reduce aliasing before downsampling.\n\n\nMust the factor be 2?\n\n\nNo! Other scale factors are possible. A factor of 2 is conventional and is used by cv2.pyrDown()."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#gaussian-pyramid-code",
+    "href": "lectures/04_image_pyramids.html#gaussian-pyramid-code",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Constructing a Gaussian Pyramid",
+    "text": "Constructing a Gaussian Pyramid\ncv2.pyrDown() combines Gaussian smoothing and downsampling.\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\nG = [I]\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    G.append(y)\n\nheights = [g.shape[0] for g in G[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = G[i].shape\n    a.imshow(G[i], cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    a.text(1.02, .5, rf\"$G_{i}$\", fontsize=28, transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.87, bottom=.02, top=.98, hspace=.12)\nplt.show()"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#what-happens-at-coarser-levels",
+    "href": "lectures/04_image_pyramids.html#what-happens-at-coarser-levels",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "What Happens at Coarser Levels?",
+    "text": "What Happens at Coarser Levels?\n\n\nWhat happens to the details of the image?\n\n\nFine details get smoothed out as we move to higher, coarser levels.\nSmall structures and texture become less distinguishable.\n\n\n\n\n\n\nWhat is preserved at the higher levels?\n\n\n\nMostly large uniform regions and broad intensity variations.\nThe overall shape and arrangement of large structures."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#can-we-recover-the-original-image",
+    "href": "lectures/04_image_pyramids.html#can-we-recover-the-original-image",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Can We Recover the Original Image?",
+    "text": "Can We Recover the Original Image?\n\n\nHow would you reconstruct the original image from an upper level image?\n\n\nExact reconstruction is not possible!\nSmoothing suppresses fine details.\nDownsampling retains fewer samples.\nEnlarging the coarse image cannot recover the missing information!"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#blurring-removes-fine-detail",
+    "href": "lectures/04_image_pyramids.html#blurring-removes-fine-detail",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Blurring Removes Fine Detail",
+    "text": "Blurring Removes Fine Detail\nGaussian smoothing suppresses detail before we even downsample.\n\n\n\n\n\n\n\n\n\nWhat does the residual look like?\nThe residual is the original image minus the smoothed image."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#what-did-smoothing-remove",
+    "href": "lectures/04_image_pyramids.html#what-did-smoothing-remove",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "What Did Smoothing Remove?",
+    "text": "What Did Smoothing Remove?\n\n\n\n\n\n\n\n\n\n\nThe residual contains edges and fine texture suppressed by smoothing.\nMid-gray represents zero; brighter and darker values represent positive and negative differences.\n\nCan we make a pyramid that allows exact reconstruction?\n\nYes! Retain the residual information along with the coarse image. This is the idea behind a Laplacian pyramid."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#start-with-one-level",
+    "href": "lectures/04_image_pyramids.html#start-with-one-level",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Start with One Level",
+    "text": "Start with One Level\nThe original image equals an expanded coarse image plus a residual.\n\n\n\n\n\n\n\n\n\nDo we need to store every blurred image as well as every residual?\n\nNo. We can recover each finer image from its residual and the next coarser image."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#laplacian-pyramid",
+    "href": "lectures/04_image_pyramids.html#laplacian-pyramid",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Laplacian Pyramid",
+    "text": "Laplacian Pyramid\n\n\n\n\n\n\nConstruction\n\n\nStart with \\(G_0 = I\\). At each level:\n\nSmooth and downsample to obtain \\(G_{i+1}\\).\nExpand \\(G_{i+1}\\) back to the size of \\(G_i\\).\nSubtract to obtain the residual:\n\n\\[\nL_i = G_i - \\operatorname{expand}(G_{i+1})\n\\]\nRepeat until the desired minimum resolution is reached.\n\n\n\nHere, expand means upsample and filter, using cv2.pyrUp().\n\n\n\n\n\nThe sequence \\(G_0, G_1, G_2, \\ldots, G_n\\) is the Gaussian pyramid.\nThe sequence \\(L_0, L_1,  \\ldots, L_{n-1}, G_n\\) is the Laplacian pyramid.\nThe Laplacian pyramid stores the detail needed to move back from one Gaussian level to the next finer level."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#upsampling-a-numerical-example",
+    "href": "lectures/04_image_pyramids.html#upsampling-a-numerical-example",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Upsampling: A Numerical Example",
+    "text": "Upsampling: A Numerical Example\n\nIn Laplacian pyramid, expand means:\n\nInsert zeros between rows and columns to enlarge the pixel grid.\nApply a Gaussian filter to interpolate pixel values.\n\n\n\nOriginal image: A \\(2\\times2\\) image.\n\\[\n\\begin{bmatrix}\n32 & 96 \\\\\n160 & 224\n\\end{bmatrix}\n\\]\n\nInsert zeros: Double width & height.\n\\[\n\\begin{bmatrix}\n32 & 0 & 96 & 0 \\\\\n0 & 0 & 0 & 0 \\\\\n160 & 0 & 224 & 0 \\\\\n0 & 0 & 0 & 0\n\\end{bmatrix}\n\\]\n\nInterpolation filter: cv2.pyrUp().\n\\[\n\\begin{bmatrix}\n80 & 96 & 120 & 128 \\\\\n112 & 128 & 152 & 160 \\\\\n160 & 176 & 200 & 208 \\\\\n176 & 192 & 216 & 224\n\\end{bmatrix}\n\\]\n\n\nThe filter spreads pixel values into neighboring positions.\nIts weights are scaled to compensate for the inserted zeros.\n\n\n\n\n\n\n\nNote\n\n\nFiltering changes values at the original pixel positions too. The enlarged image is a smooth estimate of the finer image."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#laplacian-pyramid-code",
+    "href": "lectures/04_image_pyramids.html#laplacian-pyramid-code",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Laplacian Pyramid in OpenCV",
+    "text": "Laplacian Pyramid in OpenCV\nUse floating-point arrays to preserve negative residual values.\n\n\n\nG = [I.astype(\"float32\")]\nL = []\n\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    u = cv2.pyrUp(y, dstsize=G[-1].shape[::-1])\n    L.append(G[-1] - u)\n    G.append(y)\n\nL.append(G[-1])  # Keep the smallest image too\n\nheights = [im.shape[0] for im in L[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = L[i].shape\n    s = max(float(abs(L[i]).max()), 1)\n    lo, hi = (0, 255) if i == 3 else (-s, s)\n    a.imshow(L[i], cmap=\"gray\", vmin=lo, vmax=hi,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    label = r\"$L_3=G_3$\" if i == 3 else rf\"$L_{i}$\"\n    a.text(1.02, .5, label, fontsize=28,\n           transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.76, bottom=.02,\n                    top=.98, hspace=.12)\nplt.show()"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#what-must-we-store",
+    "href": "lectures/04_image_pyramids.html#what-must-we-store",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "What Must We Store?",
+    "text": "What Must We Store?\n\n\nWhat do we need to reconstruct the original image?\n\n1. The residuals\n\\[\nL_0,\\quad L_1,\\quad L_2\n\\]\nThese retain the detail lost between consecutive Gaussian levels.\n2. The smallest Gaussian image\n\\[\nL_3 = G_3\n\\]\nThis provides the starting point for reconstruction.\n\n\n\n\n\nThe intermediate Gaussian images can also be recovered as needed.\n\n\n\n\nResidual contrast is scaled for display; mid-gray means zero.\nReconstruction uses the original signed arrays."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#reconstructing-the-original-image",
+    "href": "lectures/04_image_pyramids.html#reconstructing-the-original-image",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Reconstructing the Original Image",
+    "text": "Reconstructing the Original Image\n\n\nStart with the smallest image.\nAt each step:\n\nExpand to the next finer resolution.\nAdd the residual at that level.\nRepeat until reaching the original resolution.\n\n\\[\nG_i = \\operatorname{expand}(G_{i+1}) + L_i\n\\]\n\nThe residual restores the detail missing from the expanded image.\n\n\nKeeping the residuals and smallest image allows exact reconstruction, apart from numerical roundoff."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#gaussian-vs.-laplacian-pyramid",
+    "href": "lectures/04_image_pyramids.html#gaussian-vs.-laplacian-pyramid",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Gaussian vs. Laplacian Pyramid",
+    "text": "Gaussian vs. Laplacian Pyramid\n\n\nWhich pyramid takes more space to store?\n\n\nTheir raw storage is equal when using the same data type.\nA Laplacian pyramid can require more bits per value to represent signed differences and preserve precision.\nThey take about 33% more than the original image:\n\n\\[\nN + \\frac{N}{4} + \\frac{N}{16} + \\cdots\n\\approx \\frac{4}{3}N\n\\]\n\n\n\nGaussian pyramid\n\nLaplacian pyramid"
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#laplacian-pyramids-useful-for-compression",
+    "href": "lectures/04_image_pyramids.html#laplacian-pyramids-useful-for-compression",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Laplacian Pyramids Useful for Compression",
+    "text": "Laplacian Pyramids Useful for Compression\n\n\nRaw array size and compressed file size are different.\n\nLaplacian levels store differences between scales.\nIn smooth regions, these differences are often zero or close to zero.\n\nFrequently occurring values can be encoded using fewer bits\n\nThe residuals can be inexpensive to store after compression, even though the raw pyramid contains more values than the original image.\n\nLossy compression\n\nWe can round small residuals to zero or store them with less precision.\nThis reduces storage further, at the cost of some image detail.\nActual savings depend on the image and the encoding method."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#where-are-image-pyramids-used",
+    "href": "lectures/04_image_pyramids.html#where-are-image-pyramids-used",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Where Are Image Pyramids Used?",
+    "text": "Where Are Image Pyramids Used?\n\n\n\n\n\n\n\nApplication\nHow pyramids help\n\n\n\n\nPanorama stitching and blending\nCombine images at multiple scales to reduce visible seams.\n\n\nExposure fusion\nCombine well-exposed regions from photographs taken at different exposures.\n\n\nMotion estimation and feature tracking\nEstimate motion at coarse resolutions, then refine it at finer resolutions.\n\n\nDetail and local-contrast adjustment\nStrengthen or suppress image details at selected spatial scales."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#application-selective-detail-enhancement",
+    "href": "lectures/04_image_pyramids.html#application-selective-detail-enhancement",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Application: Selective Detail Enhancement",
+    "text": "Application: Selective Detail Enhancement\n\n\n\n\n\n\n\n\n\n\nAmplify foreground residuals, attenuate background residuals, then reconstruct:\n\n\\[\n\\widetilde{L}_i\n=\n\\left[\\alpha M_i+\\beta(1-M_i)\\right]L_i,\n\\qquad\n\\alpha=1.5,\\quad \\beta=0.25\n\\]\n\n\\(M_i\\) is the foreground mask at level \\(i\\): white selects the foreground, black selects the background, and gray gives a gradual transition."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#steerable-pyramids",
+    "href": "lectures/04_image_pyramids.html#steerable-pyramids",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Steerable Pyramids",
+    "text": "Steerable Pyramids\n\n\n\nA multi-scale, multi-orientation image representation.\nEach pyramid level contains responses to structures at several orientations.\nA filter is steerable when the response at an arbitrary orientation can be synthesized from a small set of basis filters.\n\nFor first-order derivative basis responses:\n\\[\nR_\\theta\n=\n\\cos(\\theta)\\,R_x\n+\n\\sin(\\theta)\\,R_y\n\\]\nApplications\n\nEdge and contour analysis\nTexture and orientation analysis\nImage denoising and enhancement\nImage fusion\nComputational models of visual perception\n\n\n\n\n\n\n\n\n\n\n\n\nA simplified first-order steerable pyramid: rows correspond to Gaussian pyramid levels \\(G_0\\), \\(G_1\\), and \\(G_2\\), while columns show orientation-selective responses synthesized from the basis responses \\(R_x\\) and \\(R_y\\)."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#wavelets",
+    "href": "lectures/04_image_pyramids.html#wavelets",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Wavelets",
+    "text": "Wavelets\n\n\nA wavelet transform separates an image into spatial-frequency subbands:\n\nLL: coarse approximation\nLH: horizontal detail\nHL: vertical detail\nHH: diagonal detail\n\nThe LL image can be decomposed again, producing a multi-scale representation.\nApplications\n\nImage compression — e.g., JPEG 2000\nImage denoising\nFeature extraction\nImage fusion\nMedical and scientific imaging\n\n\n\n\n\n\n\n\n\n\n\n\nHaar wavelet decomposition: at each level, the input is separated into a low-frequency approximation LL and three directional detail bands. The LL band becomes the input to the next level."
+  },
+  {
+    "objectID": "lectures/04_image_pyramids.html#key-takeaways",
+    "href": "lectures/04_image_pyramids.html#key-takeaways",
+    "title": "Lecture 04 — Image Pyramids",
+    "section": "Key Takeaways",
+    "text": "Key Takeaways\n\nDownsampling reduces image size, but naïve subsampling can discard important structure and create aliasing.\nAnti-aliasing smooths the image before downsampling so high-frequency detail does not fold into lower frequencies.\nA Gaussian pyramid stores progressively smaller, smoother versions of an image.\nA Laplacian pyramid stores what is lost between Gaussian pyramid levels: the image details or residuals.\nLaplacian pyramids can reconstruct the original image when the residuals and coarsest image are preserved.\nMulti-scale image representations are widely used in compression, blending, tracking, enhancement, steerable pyramids, and wavelets."
   },
   {
     "objectID": "lectures/02_image.html#what-is-an-image-and-how-is-it-formed",
@@ -1894,7 +2195,7 @@
     "href": "schedule.html",
     "title": "Course Schedule — Fall 2026",
     "section": "",
-    "text": "The schedule below is subject to change as the semester progresses. Lecture topics may shift slightly depending on class pace.\nHomework and exam dates are to remain fixed except in extraordinary circumstances.\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeek\nDate\nLecture\nTopic\nSlides\nAssignments / Notes\nReferences\n\n\n\n\n1M\nMon, Aug 24\nL1\nIntro to CV & class\nLec01\nClasses start\n\n\n\n1W\nWed, Aug 26\nL2\nWhat is an image? Intro to Python\nLec02\n\nSzeliski 1; Klette 1.1, 2.1\n\n\n2M\nMon, Aug 31\nL3\nImage Filtering\nLec03\nHW01 posted\nSzeliski 3.2; Klette 2.2.2; Szeliski 3.4\n\n\n2W\nWed, Sep 2\nL4\nImage Filtering\nLec03\nLast day to add/drop classes\n\n\n\n3M\nMon, Sep 7\n—\nNo class — Labor Day\n—\nHW01 due; HW02 posted; Campus closed\n\n\n\n3W\nWed, Sep 9\nL5\nImage Filtering; Fourier Transform\nLec03, Lec04\nCensus Day\nSzeliski 3.5.2, 8.1.1; Klette 1.2\n\n\n4M\nMon, Sep 14\nL6\nFourier Transform\nLec04\nHW02 due; HW03 posted\n\n\n\n4W\nWed, Sep 16\nL7\nFourier Transform\nLec04, Lec05\nCareer Day\nSzeliski 4.2; Klette 2.3, 2.4\n\n\n5M\nMon, Sep 21\nL8\nEdge Detection\nLec05\nHW03 due; HW04 posted\n\n\n\n5W\nWed, Sep 23\nL9\nEdge Detection\nLec05, Lec06\nExam 1\nSzeliski 4.1.2, 4.1.3, 4.3.2; Klette 2.3, 2.4, 9.2\n\n\n6M\nMon, Sep 28\nL10\nFeature Points\nLec06\nHW04 due; HW05 posted\n\n\n\n6W\nWed, Sep 30\nL11\nFeature Points & Matching\nLec06\n\nSzeliski 2.1 (esp. 2.1.5), 2.2, 2.3; Klette 6.1, 1.3\n\n\n7M\nMon, Oct 5\nL12\nFeature Matching\nLec06\nHW05 due; HW06 posted\n\n\n\n7W\nWed, Oct 7\nL13\nHough Transform\nLec07\n\n\n\n\n8M\nMon, Oct 12\n—\nNo class — Fall Break\n—\nFall Break: Oct 12–13\n\n\n\n8W\nWed, Oct 14\nL14\nOptical Flow, Color\nLec08, Lec09\nHW06 due; HW07 posted\nSzeliski 2.1, 6.1, 6.2.1\n\n\n9M\nMon, Oct 19\nL15\nCamera Geometry\nLec10\nExam 2\nSzeliski 7, 8.1, 8.4, 11\n\n\n9W\nWed, Oct 21\nL16\nCamera Geometry\nLec10\nHW07 due; HW08 posted\nSzeliski 6.2.1\n\n\n10M\nMon, Oct 26\nL17\nCamera Calibration\nLec11\n\n\n\n\n10W\nWed, Oct 28\nL18\nTwo-View Geometry\nLec12\nHW08 due; HW09 posted\nSzeliski 5.3\n\n\n11M\nMon, Nov 2\nL19\nTwo-View Geometry\nLec12\n\nSzeliski 14\n\n\n11W\nWed, Nov 4\nL20\nDepth Cameras\nLec13\nHW09 due; HW10 posted\nSzeliski 14.1, 14.2\n\n\n12M\nMon, Nov 9\nL21\nMachine Learning\nLec14\nExam 3\nSzeliski 14.5\n\n\n12W\nWed, Nov 11\nL22\nRecognition\nLec15\nHW10 due\nGoodfellow 6, 9\n\n\n13M\nMon, Nov 16\nL23\nFace Detection, Pedestrian Detection\nLec16, Lec17\nHW11 posted\n\n\n\n13W\nWed, Nov 18\nL24\nNeural Networks\nLec 18\n\nGoodfellow 6, 7.1–7.5, 7.12\n\n\n14M\nMon, Nov 23\nL25\nNeural Networks\nLec 18\nHW11 due\n\n\n\n14W\nWed, Nov 25\n—\nNo class — Thanksgiving Break\n—\nThanksgiving break\n\n\n\n15M\nMon, Nov 30\nL26\nTraining Neural Networks\nLec 19\nHW12 posted\n\n\n\n15W\nWed, Dec 2\nL27\nWhat do CNNs learn?\nLec20\nExam 4\n\n\n\n16M\nMon, Dec 7\nL28\nWhat do CNNs learn?\nLec21\nHW12 due; Last week of class\n\n\n\n16W\nWed, Dec 9\nL29\nCNN Architectures\nLec22\nLast week of class; Classes end"
+    "text": "The schedule below is subject to change as the semester progresses. Lecture topics may shift slightly depending on class pace.\nHomework and exam dates are to remain fixed except in extraordinary circumstances.\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeek\nDate\nLecture\nTopic\nSlides\nAssignments / Notes\nReferences\n\n\n\n\n1M\nMon, Aug 24\nL1\nIntro to CV & class\nLec01\nClasses start\n\n\n\n1W\nWed, Aug 26\nL2\nWhat is an image? Intro to Python\nLec02\n\nSzeliski 1; Klette 1.1, 2.1\n\n\n2M\nMon, Aug 31\nL3\nImage Filtering\nLec03\nHW01 posted\nSzeliski 3.2; Klette 2.2.2; Szeliski 3.4\n\n\n2W\nWed, Sep 2\nL4\nImage Filtering\nLec03\nLast day to add/drop classes\n\n\n\n3M\nMon, Sep 7\n—\nNo class — Labor Day\n—\nHW01 due; HW02 posted; Campus closed\n\n\n\n3W\nWed, Sep 9\nL5\nImage Pyramids\nLec03, Lec04\nCensus Day\nSzeliski 3.5.2, 8.1.1; Klette 1.2\n\n\n4M\nMon, Sep 14\nL6\nFourier Transform\nLec04, Lec05\nHW02 due; HW03 posted\n\n\n\n4W\nWed, Sep 16\nL7\nFourier Transform\nLec05\nCareer Day\nSzeliski 4.2; Klette 2.3, 2.4\n\n\n5M\nMon, Sep 21\nL8\nEdge Detection\nLec06\nHW03 due; HW04 posted\n\n\n\n5W\nWed, Sep 23\nL9\nEdge Detection\nLec06, Lec07\nExam 1\nSzeliski 4.1.2, 4.1.3, 4.3.2; Klette 2.3, 2.4, 9.2\n\n\n6M\nMon, Sep 28\nL10\nFeature Points\nLec07\nHW04 due; HW05 posted\n\n\n\n6W\nWed, Sep 30\nL11\nFeature Points & Matching\nLec07\n\nSzeliski 2.1 (esp. 2.1.5), 2.2, 2.3; Klette 6.1, 1.3\n\n\n7M\nMon, Oct 5\nL12\nFeature Matching\nLec07\nHW05 due; HW06 posted\n\n\n\n7W\nWed, Oct 7\nL13\nHough Transform\nLec08\n\n\n\n\n8M\nMon, Oct 12\n—\nNo class — Fall Break\n—\nFall Break: Oct 12–13\n\n\n\n8W\nWed, Oct 14\nL14\nOptical Flow, Color\nLec09, Lec10\nHW06 due; HW07 posted\nSzeliski 2.1, 6.1, 6.2.1\n\n\n9M\nMon, Oct 19\nL15\nCamera Geometry\nLec11\nExam 2\nSzeliski 7, 8.1, 8.4, 11\n\n\n9W\nWed, Oct 21\nL16\nCamera Geometry\nLec11\nHW07 due; HW08 posted\nSzeliski 6.2.1\n\n\n10M\nMon, Oct 26\nL17\nCamera Calibration\nLec12\n\n\n\n\n10W\nWed, Oct 28\nL18\nTwo-View Geometry\nLec13\nHW08 due; HW09 posted\nSzeliski 5.3\n\n\n11M\nMon, Nov 2\nL19\nTwo-View Geometry\nLec13\n\nSzeliski 14\n\n\n11W\nWed, Nov 4\nL20\nDepth Cameras\nLec14\nHW09 due; HW10 posted\nSzeliski 14.1, 14.2\n\n\n12M\nMon, Nov 9\nL21\nMachine Learning\nLec15\nExam 3\nSzeliski 14.5\n\n\n12W\nWed, Nov 11\nL22\nRecognition\nLec16\nHW10 due\nGoodfellow 6, 9\n\n\n13M\nMon, Nov 16\nL23\nFace Detection, Pedestrian Detection\nLec17, Lec18\nHW11 posted\n\n\n\n13W\nWed, Nov 18\nL24\nNeural Networks\nLec19\n\nGoodfellow 6, 7.1–7.5, 7.12\n\n\n14M\nMon, Nov 23\nL25\nNeural Networks\nLec19\nHW11 due\n\n\n\n14W\nWed, Nov 25\n—\nNo class — Thanksgiving Break\n—\nThanksgiving break\n\n\n\n15M\nMon, Nov 30\nL26\nTraining Neural Networks\nLec20\nHW12 posted\n\n\n\n15W\nWed, Dec 2\nL27\nWhat do CNNs learn?\nLec21\nExam 4\n\n\n\n16M\nMon, Dec 7\nL28\nWhat do CNNs learn?\nLec22\nHW12 due; Last week of class\n\n\n\n16W\nWed, Dec 9\nL29\nCNN Architectures\nLec23\nLast week of class; Classes end"
   },
   {
     "objectID": "tas.html",
