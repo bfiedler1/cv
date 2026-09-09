@@ -410,7 +410,7 @@
     "href": "lectures/04_image_pyramids.html#window-size",
     "title": "Lecture 04 — Image Pyramids",
     "section": "Naïve Image Downsampling",
-    "text": "Naïve Image Downsampling\nKeep every other row and column, then repeat.\n\n\n\n\n\n\nimport matplotlib.pyplot as plt\n\ny2 = I[::2, ::2]\ny4 = y2[::2, ::2]\ny8 = y4[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\n\nfor a, y, s in zip(ax, [y2, y4, y8], [2, 4, 8]):\n    a.imshow(y, cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()"
+    "text": "Naïve Image Downsampling\nKeep every other row and column, then repeat.\n\n\n\n\n\n\nimport matplotlib.pyplot as plt\n\ny2 = I[::2, ::2]\ny4 = y2[::2, ::2]\ny8 = y4[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\n\nfor a, y, s in zip(ax, [y2, y4, y8], [2, 4, 8]):\n    a.imshow(color_display(y), cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()"
   },
   {
     "objectID": "lectures/04_image_pyramids.html#naïve-image-downsampling",
@@ -536,7 +536,7 @@
     "href": "lectures/04_image_pyramids.html#gaussian-downsampling",
     "title": "Lecture 04 — Image Pyramids",
     "section": "Better Image Downsampling",
-    "text": "Better Image Downsampling\nApply a Gaussian filter, then keep every other row and column. Repeat.\n\n\n\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\ny2g = cv2.GaussianBlur(I, (3,3), 2)[::2, ::2]\ny4g = cv2.GaussianBlur(y2g, (3,3), 2)[::2, ::2]\ny8g = cv2.GaussianBlur(y4g, (3,3), 2)[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\nfor a, y, s in zip(ax, [y2g, y4g, y8g], [2, 4, 8]):\n    a.imshow(y, cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()\nplt.close(fig)"
+    "text": "Better Image Downsampling\nApply a Gaussian filter, then keep every other row and column. Repeat.\n\n\n\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\ny2g = cv2.GaussianBlur(I, (3,3), 2)[::2, ::2]\ny4g = cv2.GaussianBlur(y2g, (3,3), 2)[::2, ::2]\ny8g = cv2.GaussianBlur(y4g, (3,3), 2)[::2, ::2]\n\nfig, ax = plt.subplots(1, 3, figsize=(8, 4),\n    gridspec_kw={\"width_ratios\": [4, 2, 1]})\nfor a, y, s in zip(ax, [y2g, y4g, y8g], [2, 4, 8]):\n    a.imshow(color_display(y), cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\")\n    a.set_title(f\"1/{s}\")\n    a.axis(\"off\")\nplt.tight_layout()\nplt.show()\nplt.close(fig)"
   },
   {
     "objectID": "lectures/04_image_pyramids.html#comparison-of-downsampling-methods",
@@ -571,7 +571,7 @@
     "href": "lectures/04_image_pyramids.html#gaussian-pyramid-code",
     "title": "Lecture 04 — Image Pyramids",
     "section": "Constructing a Gaussian Pyramid",
-    "text": "Constructing a Gaussian Pyramid\ncv2.pyrDown() combines Gaussian smoothing and downsampling.\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\nG = [I]\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    G.append(y)\n\nheights = [g.shape[0] for g in G[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = G[i].shape\n    a.imshow(G[i], cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    a.text(1.02, .5, rf\"$G_{i}$\", fontsize=28, transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.87, bottom=.02, top=.98, hspace=.12)\nplt.show()"
+    "text": "Constructing a Gaussian Pyramid\ncv2.pyrDown() combines Gaussian smoothing and downsampling.\n\n\n\nimport cv2\nimport matplotlib.pyplot as plt\n\nG = [I]\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    G.append(y)\n\nheights = [g.shape[0] for g in G[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = G[i].shape[:2]\n    a.imshow(color_display(G[i]), cmap=\"gray\", vmin=0, vmax=255,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    a.text(1.02, .5, rf\"$G_{i}$\", fontsize=28, transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.87, bottom=.02, top=.98, hspace=.12)\nplt.show()"
   },
   {
     "objectID": "lectures/04_image_pyramids.html#what-happens-at-coarser-levels",
@@ -627,7 +627,7 @@
     "href": "lectures/04_image_pyramids.html#laplacian-pyramid-code",
     "title": "Lecture 04 — Image Pyramids",
     "section": "Laplacian Pyramid in OpenCV",
-    "text": "Laplacian Pyramid in OpenCV\nUse floating-point arrays to preserve negative residual values.\n\n\n\nG = [I.astype(\"float32\")]\nL = []\n\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    u = cv2.pyrUp(y, dstsize=G[-1].shape[::-1])\n    L.append(G[-1] - u)\n    G.append(y)\n\nL.append(G[-1])  # Keep the smallest image too\n\nheights = [im.shape[0] for im in L[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = L[i].shape\n    s = max(float(abs(L[i]).max()), 1)\n    lo, hi = (0, 255) if i == 3 else (-s, s)\n    a.imshow(L[i], cmap=\"gray\", vmin=lo, vmax=hi,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    label = r\"$L_3=G_3$\" if i == 3 else rf\"$L_{i}$\"\n    a.text(1.02, .5, label, fontsize=28,\n           transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.76, bottom=.02,\n                    top=.98, hspace=.12)\nplt.show()"
+    "text": "Laplacian Pyramid in OpenCV\nUse floating-point arrays to preserve negative residual values.\n\n\n\nG = [I.astype(\"float32\")]\nL = []\n\nfor _ in range(3):\n    y = cv2.pyrDown(G[-1], borderType=cv2.BORDER_REFLECT)\n    u = cv2.pyrUp(y, dstsize=G[-1].shape[:2][::-1])\n    L.append(G[-1] - u)\n    G.append(y)\n\nL.append(G[-1])  # Keep the smallest image too\n\nheights = [im.shape[0] for im in L[::-1]]\nfig, ax = plt.subplots(4, 1, figsize=(10, 7.5),\n                      gridspec_kw={\"height_ratios\": heights})\n\nW = I.shape[1]\nfor a, i in zip(ax, range(3, -1, -1)):\n    h, w = L[i].shape[:2]\n    s = max(float(abs(L[i]).max()), 1)\n    lo, hi = (0, 255) if i == 3 else (-s, s)\n    a.imshow(color_display(L[i], lo, hi), cmap=\"gray\", vmin=lo, vmax=hi,\n             interpolation=\"nearest\",\n             extent=((W-w)/2, (W+w)/2, h, 0))\n    a.set_xlim(0, W)\n    label = r\"$L_3=G_3$\" if i == 3 else rf\"$L_{i}$\"\n    a.text(1.02, .5, label, fontsize=28,\n           transform=a.transAxes, va=\"center\")\n    a.axis(\"off\")\nfig.subplots_adjust(left=.03, right=.76, bottom=.02,\n                    top=.98, hspace=.12)\nplt.show()"
   },
   {
     "objectID": "lectures/04_image_pyramids.html#what-must-we-store",
@@ -788,7 +788,7 @@
     "href": "lectures/02_image.html#resolution-geometric-vs.-spatial",
     "title": "Lecture 02 — Image Formation and Digital Images",
     "section": "Resolution: Geometric vs. Spatial",
-    "text": "Resolution: Geometric vs. Spatial\nBoth images can have the same number of pixels, but the amount of scene detail represented can be different.\n\n\n Low geometric resolution\n\n High geometric resolution\n\n\n\n\n\n\n\nNote\n\n\nSpatial resolution counts pixels. Geometric resolution is how accurately those pixels represent the positions of objects in the real world."
+    "text": "Resolution: Geometric vs. Spatial\nBoth images can have the same number of pixels, but the amount of scene detail represented can be different.\n\n\n Low geometric resolution\n\n High geometric resolution\n\n\n\n\n\n\n\nNote\n\n\nSpatial resolution counts pixels. Geometric resolution is how accurately those pixels represent the positions of objects in the real world; or how sharp the image is. Geometric resolution is limited by physics, optics, and the environment (see Rayleigh criterion)."
   },
   {
     "objectID": "lectures/02_image.html#quantization",

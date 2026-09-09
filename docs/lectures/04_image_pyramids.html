@@ -247,7 +247,7 @@ Kaveh Fathian
   overflow-y: auto;
 }
 </style>
-<div id="1fa98fcf" class="cell code-block columns column-output-location" data-execution_count="3">
+<div id="865b434d" class="cell code-block columns column-output-location" data-execution_count="2">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-label="1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a aria-label="2"></a></span>
@@ -259,7 +259,7 @@ Kaveh Fathian
 <span id="cb1-8"><a aria-label="8"></a>    gridspec_kw<span class="op">=</span>{<span class="st">"width_ratios"</span>: [<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>]})</span>
 <span id="cb1-9"><a aria-label="9"></a></span>
 <span id="cb1-10"><a aria-label="10"></a><span class="cf">for</span> a, y, s <span class="kw">in</span> <span class="bu">zip</span>(ax, [y2, y4, y8], [<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>]):</span>
-<span id="cb1-11"><a aria-label="11"></a>    a.imshow(y, cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
+<span id="cb1-11"><a aria-label="11"></a>    a.imshow(color_display(y), cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
 <span id="cb1-12"><a aria-label="12"></a>             interpolation<span class="op">=</span><span class="st">"nearest"</span>)</span>
 <span id="cb1-13"><a aria-label="13"></a>    a.set_title(<span class="ss">f"1/</span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-14"><a aria-label="14"></a>    a.axis(<span class="st">"off"</span>)</span>
@@ -277,7 +277,7 @@ Kaveh Fathian
 </section>
 <section id="naïve-image-downsampling" class="slide level2">
 <h2>Naïve Image Downsampling</h2>
-<div id="b61574d8" class="cell" data-execution_count="4">
+<div id="6b136e41" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -469,7 +469,7 @@ Kaveh Fathian
 <div style="height: 20px;">
 
 </div>
-<div id="00fd62b3" class="cell" data-execution_count="5">
+<div id="f58920c4" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -482,7 +482,7 @@ Kaveh Fathian
 <section id="anti-aliasing-smoothing" class="slide level2">
 <h2>Anti-aliasing: Smoothing</h2>
 <p><strong>Approach 2:</strong> Smooth the image <strong>before downsampling</strong>.</p>
-<div id="fd3d9bae" class="cell" data-execution_count="6">
+<div id="390314c3" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -506,7 +506,7 @@ Kaveh Fathian
   overflow-y: auto;
 }
 </style>
-<div id="67c7b254" class="cell code-block columns column-output-location" data-execution_count="7">
+<div id="b0a5266f" class="cell code-block columns column-output-location" data-execution_count="6">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-label="1"></a><span class="im">import</span> cv2</span>
 <span id="cb2-2"><a aria-label="2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -518,7 +518,7 @@ Kaveh Fathian
 <span id="cb2-8"><a aria-label="8"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>),</span>
 <span id="cb2-9"><a aria-label="9"></a>    gridspec_kw<span class="op">=</span>{<span class="st">"width_ratios"</span>: [<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>]})</span>
 <span id="cb2-10"><a aria-label="10"></a><span class="cf">for</span> a, y, s <span class="kw">in</span> <span class="bu">zip</span>(ax, [y2g, y4g, y8g], [<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>]):</span>
-<span id="cb2-11"><a aria-label="11"></a>    a.imshow(y, cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
+<span id="cb2-11"><a aria-label="11"></a>    a.imshow(color_display(y), cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
 <span id="cb2-12"><a aria-label="12"></a>             interpolation<span class="op">=</span><span class="st">"nearest"</span>)</span>
 <span id="cb2-13"><a aria-label="13"></a>    a.set_title(<span class="ss">f"1/</span><span class="sc">{</span>s<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb2-14"><a aria-label="14"></a>    a.axis(<span class="st">"off"</span>)</span>
@@ -538,7 +538,7 @@ Kaveh Fathian
 <section id="comparison-of-downsampling-methods" class="slide level2">
 <h2>Comparison of Downsampling Methods</h2>
 <h3 id="naïve-image-downsampling-1">Naïve Image Downsampling:</h3>
-<div id="e0a3c32b" class="cell" data-execution_count="8">
+<div id="8d4a1739" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -548,7 +548,7 @@ Kaveh Fathian
 </div>
 </div>
 <h3 id="smoothed-image-downsampling">Smoothed Image Downsampling:</h3>
-<div id="7b1d1276" class="cell" data-execution_count="9">
+<div id="91ecf57b" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -689,7 +689,7 @@ G_{i+1} = \operatorname{downsample}(h_G * G_i)
   overflow-y: auto;
 }
 </style>
-<div id="6d27588d" class="cell code-block columns column-output-location" data-execution_count="10">
+<div id="f3f04f7f" class="cell code-block columns column-output-location" data-execution_count="9">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a aria-label="1"></a><span class="im">import</span> cv2</span>
 <span id="cb3-2"><a aria-label="2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -705,8 +705,8 @@ G_{i+1} = \operatorname{downsample}(h_G * G_i)
 <span id="cb3-12"><a aria-label="12"></a></span>
 <span id="cb3-13"><a aria-label="13"></a>W <span class="op">=</span> I.shape[<span class="dv">1</span>]</span>
 <span id="cb3-14"><a aria-label="14"></a><span class="cf">for</span> a, i <span class="kw">in</span> <span class="bu">zip</span>(ax, <span class="bu">range</span>(<span class="dv">3</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)):</span>
-<span id="cb3-15"><a aria-label="15"></a>    h, w <span class="op">=</span> G[i].shape</span>
-<span id="cb3-16"><a aria-label="16"></a>    a.imshow(G[i], cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
+<span id="cb3-15"><a aria-label="15"></a>    h, w <span class="op">=</span> G[i].shape[:<span class="dv">2</span>]</span>
+<span id="cb3-16"><a aria-label="16"></a>    a.imshow(color_display(G[i]), cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">255</span>,</span>
 <span id="cb3-17"><a aria-label="17"></a>             interpolation<span class="op">=</span><span class="st">"nearest"</span>,</span>
 <span id="cb3-18"><a aria-label="18"></a>             extent<span class="op">=</span>((W<span class="op">-</span>w)<span class="op">/</span><span class="dv">2</span>, (W<span class="op">+</span>w)<span class="op">/</span><span class="dv">2</span>, h, <span class="dv">0</span>))</span>
 <span id="cb3-19"><a aria-label="19"></a>    a.set_xlim(<span class="dv">0</span>, W)</span>
@@ -771,7 +771,7 @@ G_{i+1} = \operatorname{downsample}(h_G * G_i)
 <section id="blurring-removes-fine-detail" class="slide level2">
 <h2>Blurring Removes Fine Detail</h2>
 <p>Gaussian smoothing suppresses detail <strong>before we even downsample</strong>.</p>
-<div id="9d3f1332" class="cell" data-execution_count="12">
+<div id="74fe14ae" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -785,7 +785,7 @@ G_{i+1} = \operatorname{downsample}(h_G * G_i)
 </section>
 <section id="what-did-smoothing-remove" class="slide level2">
 <h2>What Did Smoothing Remove?</h2>
-<div id="7fb9d800" class="cell" data-execution_count="13">
+<div id="f253e63d" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -806,7 +806,7 @@ G_{i+1} = \operatorname{downsample}(h_G * G_i)
 <section id="start-with-one-level" class="slide level2">
 <h2>Start with One Level</h2>
 <p>The original image equals an <strong>expanded coarse image</strong> plus a <strong>residual</strong>.</p>
-<div id="193eb421" class="cell" data-execution_count="14">
+<div id="2d5e8218" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -921,14 +921,14 @@ L_i = G_i - \operatorname{expand}(G_{i+1})
   overflow-y: auto;
 }
 </style>
-<div id="7ba4fd51" class="cell code-block columns column-output-location" data-execution_count="15">
+<div id="b0052933" class="cell code-block columns column-output-location" data-execution_count="14">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a aria-label="1"></a>G <span class="op">=</span> [I.astype(<span class="st">"float32"</span>)]</span>
 <span id="cb4-2"><a aria-label="2"></a>L <span class="op">=</span> []</span>
 <span id="cb4-3"><a aria-label="3"></a></span>
 <span id="cb4-4"><a aria-label="4"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
 <span id="cb4-5"><a aria-label="5"></a>    y <span class="op">=</span> cv2.pyrDown(G[<span class="op">-</span><span class="dv">1</span>], borderType<span class="op">=</span>cv2.BORDER_REFLECT)</span>
-<span id="cb4-6"><a aria-label="6"></a>    u <span class="op">=</span> cv2.pyrUp(y, dstsize<span class="op">=</span>G[<span class="op">-</span><span class="dv">1</span>].shape[::<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb4-6"><a aria-label="6"></a>    u <span class="op">=</span> cv2.pyrUp(y, dstsize<span class="op">=</span>G[<span class="op">-</span><span class="dv">1</span>].shape[:<span class="dv">2</span>][::<span class="op">-</span><span class="dv">1</span>])</span>
 <span id="cb4-7"><a aria-label="7"></a>    L.append(G[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> u)</span>
 <span id="cb4-8"><a aria-label="8"></a>    G.append(y)</span>
 <span id="cb4-9"><a aria-label="9"></a></span>
@@ -940,10 +940,10 @@ L_i = G_i - \operatorname{expand}(G_{i+1})
 <span id="cb4-15"><a aria-label="15"></a></span>
 <span id="cb4-16"><a aria-label="16"></a>W <span class="op">=</span> I.shape[<span class="dv">1</span>]</span>
 <span id="cb4-17"><a aria-label="17"></a><span class="cf">for</span> a, i <span class="kw">in</span> <span class="bu">zip</span>(ax, <span class="bu">range</span>(<span class="dv">3</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)):</span>
-<span id="cb4-18"><a aria-label="18"></a>    h, w <span class="op">=</span> L[i].shape</span>
+<span id="cb4-18"><a aria-label="18"></a>    h, w <span class="op">=</span> L[i].shape[:<span class="dv">2</span>]</span>
 <span id="cb4-19"><a aria-label="19"></a>    s <span class="op">=</span> <span class="bu">max</span>(<span class="bu">float</span>(<span class="bu">abs</span>(L[i]).<span class="bu">max</span>()), <span class="dv">1</span>)</span>
 <span id="cb4-20"><a aria-label="20"></a>    lo, hi <span class="op">=</span> (<span class="dv">0</span>, <span class="dv">255</span>) <span class="cf">if</span> i <span class="op">==</span> <span class="dv">3</span> <span class="cf">else</span> (<span class="op">-</span>s, s)</span>
-<span id="cb4-21"><a aria-label="21"></a>    a.imshow(L[i], cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span>lo, vmax<span class="op">=</span>hi,</span>
+<span id="cb4-21"><a aria-label="21"></a>    a.imshow(color_display(L[i], lo, hi), cmap<span class="op">=</span><span class="st">"gray"</span>, vmin<span class="op">=</span>lo, vmax<span class="op">=</span>hi,</span>
 <span id="cb4-22"><a aria-label="22"></a>             interpolation<span class="op">=</span><span class="st">"nearest"</span>,</span>
 <span id="cb4-23"><a aria-label="23"></a>             extent<span class="op">=</span>((W<span class="op">-</span>w)<span class="op">/</span><span class="dv">2</span>, (W<span class="op">+</span>w)<span class="op">/</span><span class="dv">2</span>, h, <span class="dv">0</span>))</span>
 <span id="cb4-24"><a aria-label="24"></a>    a.set_xlim(<span class="dv">0</span>, W)</span>
@@ -1016,7 +1016,7 @@ G_i = \operatorname{expand}(G_{i+1}) + L_i
 <p>Keeping the residuals and smallest image allows <strong>exact reconstruction</strong>, apart from numerical roundoff.</p>
 </div>
 </div><div class="column" style="width:62%;">
-<div id="021075f0" class="cell" data-execution_count="17">
+<div id="3d36e3d1" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1112,7 +1112,7 @@ N + \frac{N}{4} + \frac{N}{16} + \cdots
 </section>
 <section id="application-selective-detail-enhancement" class="slide level2">
 <h2>Application: Selective Detail Enhancement</h2>
-<div id="8e0d3080" class="cell" data-execution_count="18">
+<div id="19c99a0b" class="cell" data-execution_count="17">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1161,7 +1161,7 @@ R_\theta
 <li>Computational models of visual perception</li>
 </ul>
 </div><div class="column" style="width:58%;">
-<div id="4aba00d5" class="cell" data-execution_count="19">
+<div id="cd0dcbcd" class="cell" data-execution_count="18">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -1196,7 +1196,7 @@ R_\theta
 <li>Medical and scientific imaging</li>
 </ul>
 </div><div class="column" style="width:58%;">
-<div id="8912f490" class="cell" data-execution_count="20">
+<div id="c735346d" class="cell" data-execution_count="19">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
