@@ -441,10 +441,15 @@ I(x, y) = \text{intensity at image location} (x,y)
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Spatial resolution counts pixels. Geometric resolution is how accurately those pixels represent the positions of objects in the real world.</p>
+<p>Spatial resolution counts pixels. Geometric resolution is how accurately those pixels represent the positions of objects in the real world; or how sharp the image is. Geometric resolution is limited by physics, optics, and the environment (see Rayleigh criterion).</p>
 </div>
 </div>
 </div>
+<!-- I wanted to provide an explanation for the differences between Geometric and Spatial Resolution discussed in Lecture 2.
+
+Spatial resolution - completely dependent on the sensor used to digitize the image projected onto it. The smaller the pixels the more detail that can be captured, but we cannot get around the quantization/digitization of information - it will get cast to an integer value despite being a continuous signal. At some point the electronics has to to decide between two adjacent values. Interestingly, human perception of brightness is non-linear, so cameras attempt to mimic this in software as they count light photons with a linear photon-to-electron conversion response. Also interesting, sensors are inherently mono-color, and we have to add filters to discern between colors when digitizing. When using filter, the pixels are actually three sub-pixels each with a different color filter (Red, Green, Blue). The process of combining these three channels is called debayering.
+
+Now the other topic, Geometric Resolution is less intuitive, but fundamental physics provides an absolute bound described by the Rayleigh criterion. In practice though, unless you are taking diffraction limited images or making microelectronics, there are many other factors that can degrade the ability to capture a sharp image. Being out of focus is the most clear representation, but also the optics used to focus the light can (and do) introduce chromatic aberration (dependent on wavelength) and spherical aberration (dependent on the lens shape). But other factors also include fog/haze, or even air currents depending on the imaging setup. All of these factors combine to degrade the sharpness that can be obtained by a camera. At the extreme end of optics (space telescopes and microelectronics fabrication), it turns out that the Rayleigh criterion becomes the most significant factor, and much like car engines (where there is no replacement for displacement), the optics must get bigger in diameter to get better Geometric Resolution. -->
 </section>
 <section id="quantization" class="slide level2">
 <h2>Quantization</h2>
