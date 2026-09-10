@@ -65,7 +65,7 @@ def correlate2d(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     h, w = image.shape
 
     # Pad 2 zeros before (left) and 3 zeros after (right)
-    padded = np.pad(image, ((height // 2, height // 2) , (width //2, width // 2)), 'constant')
+    padded = np.pad(image, ((height // 2, height // 2) , (width // 2, width // 2)), 'constant')
     if (padded.shape != image.shape):
         print("error: output not same shape as the input")
 
@@ -94,8 +94,12 @@ def convolve2d(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     np.flip() or cv2.flip() to rotate the kernel; the filtering itself must
     still be performed by your correlate2d() implementation.
     """
-    # TODO
-    raise NotImplementedError
+
+    # reversing via all directions = flip 180
+    rotated_kernel = np.flip(kernel)
+    # run that through correlate function
+    output = correlate2d(image, rotated_kernel)
+    return output
 
 
 def median_filter3x3(image: np.ndarray) -> np.ndarray:
@@ -106,6 +110,20 @@ def median_filter3x3(image: np.ndarray) -> np.ndarray:
     cv2.medianBlur(), scipy.ndimage.median_filter(), or another library median
     filtering implementation. Return dtype np.float32.
     """
+
+    h, w = image.shape
+
+    padded = np.pad(image, 1, 'constant')
+
+    output = np.zeros((h, w), dtype = np.float32)
+
+    for i in range(h):
+        for j in range(w):
+            neighborhood = padded[i:i+3, j:j+3]
+            median = np.median(neighborhood)
+            output[i,j] = (padded * median)
+
+
     # TODO
     raise NotImplementedError
 
