@@ -54,20 +54,18 @@ def correlate2d(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     """
 
     if (image.ndim != 2 or kernel.ndim != 2):
-        print("image is not a 2d array")
+        raise ValueError("image is not a 2d array")
         # return error
 
     height, width = kernel.shape
     if (height % 2 == 0 or width % 2 == 0):
-        print("kernel has even height or width")
+        raise ValueError("kernel has even height or width")
         # don't continue - ret error
 
     h, w = image.shape
 
     # Pad 2 zeros before (left) and 3 zeros after (right)
     padded = np.pad(image, ((height // 2, height // 2) , (width // 2, width // 2)), 'constant')
-    if (padded.shape != image.shape):
-        print("error: output not same shape as the input")
 
     # create output as numpy array w type float32
     output = np.zeros((h,w), dtype = np.float32)
@@ -110,7 +108,7 @@ def median_filter3x3(image: np.ndarray) -> np.ndarray:
     cv2.medianBlur(), scipy.ndimage.median_filter(), or another library median
     filtering implementation. Return dtype np.float32.
     """
-
+    # exact same concept as correlate2D, just using median of neighborhood
     h, w = image.shape
 
     padded = np.pad(image, 1, 'constant')
@@ -121,11 +119,9 @@ def median_filter3x3(image: np.ndarray) -> np.ndarray:
         for j in range(w):
             neighborhood = padded[i:i+3, j:j+3]
             median = np.median(neighborhood)
-            output[i,j] = (padded * median)
+            output[i,j] = median
 
-
-    # TODO
-    raise NotImplementedError
+    return output
 
 
 # -----------------------------------------------------------------------------
