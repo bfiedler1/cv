@@ -88,7 +88,8 @@ def reconstruct_laplacian_pyramid(pyramid: list[np.ndarray]) -> np.ndarray:
     # extract the smallest image from the returned array
     smallest_image = pyramid[-1]
 
-    # expand using resduals
+    # doing a reverse loop reconstruction
+    # expand using resduals because we are starting at pyramid [-1] need the second to last element
     i = len(pyramid) - 2
 
     while i >= 0:
