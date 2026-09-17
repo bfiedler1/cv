@@ -34,8 +34,30 @@ def build_laplacian_pyramid(image: np.ndarray, levels: int) -> list[np.ndarray]:
     - The final list entry is the smallest Gaussian image.
     - IMPORTANT: Your implementation must work for odd and non-square image sizes.
     """
-    # TODO
-    raise NotImplementedError
+
+    # requirement 1
+    image = image.astype(np.float32)
+
+    if (image.ndim != 2):
+        raise ValueError("error: image is not a 2d array")
+
+    if not ((image >= 0) & (image <= 1)).all():
+        raise ValueError("error: values not between 0,1")
+
+    # requirement 2
+    pyramid_array = []
+
+    # requirement 3-6
+    for level in range(levels):
+        down = cv2.pyrDown(image, borderType=cv2.BORDER_REFLECT)
+        expanded = cv2.pyrUp(down, dstsize=image.shape[::-1])
+        residual = image - expanded
+        pyramid_array.append(residual)
+        # image needs to be getting smaller
+        image = down.astype(np.float32) # part of requirement 2 keep as np float array
+
+    pyramid_array.append(image)
+    return pyramid_array
 
 
 def reconstruct_laplacian_pyramid(pyramid: list[np.ndarray]) -> np.ndarray:
@@ -43,9 +65,40 @@ def reconstruct_laplacian_pyramid(pyramid: list[np.ndarray]) -> np.ndarray:
 
     Start with the final coarse image. Repeatedly expand it to the size of the
     residual at the next finer level and add that residual. Return np.float32.
+
+    Copy notes from class here:
+
+    What do we need to reconstruct the original image?
+
+    1. The residuals
+
+    𝐿0,𝐿1,𝐿2
+
+    These retain the detail lost between consecutive Gaussian levels.
+
+    2. The smallest Gaussian image
+
+    𝐿3=𝐺3
+
+    This provides the starting point for reconstruction.
+
+    The intermediate Gaussian images can also be recovered as needed.
     """
-    # TODO
-    raise NotImplementedError
+
+    # extract the smallest image from the returned array
+    smallest_image = pyramid[-1]
+
+    # expand using resduals
+    i = len(pyramid) - 2
+
+    while i >= 0:
+        # should follow similar structure for parts of building function
+        expanded_up = cv2.pyrUp(smallest_image, dstsize=pyramid[i].shape[::-1])
+        smallest_image = expanded_up + pyramid[i]
+        i -= 1
+
+    # return np float 32
+    return smallest_image.astype(np.float32)
 
 
 def threshold_laplacian_pyramid(
@@ -63,8 +116,18 @@ def threshold_laplacian_pyramid(
     A suitable independent copy for this list-of-arrays structure is:
         new_pyramid = [level.copy() for level in pyramid]
     """
-    # TODO
-    raise NotImplementedError
+    # For this list-of-arrays structure, an appropriate independent copy is:
+    # new_pyramid = [level.copy() for level in pyramid]
+    # You may then threshold the copied residual arrays. You do not need to use copy.deepcopy()
+
+    # we have a pyramid and a threshold, can make an appropriate independent copy 
+    new_pyramid = [level.copy() for level in pyramid]
+
+    # For every residual level pyramid[:-1]: abs(coefficient) < threshold  ->  0
+    for level in new_pyramid[:-1]:
+        level[abs(level) < threshold] = 0
+
+    return new_pyramid
 
 
 def residual_nonzero_fraction(pyramid: list[np.ndarray]) -> float:
@@ -73,9 +136,28 @@ def residual_nonzero_fraction(pyramid: list[np.ndarray]) -> float:
     Count coefficients only in pyramid[:-1]; the final coarse image is not
     included. Return a Python float in [0, 1].
     """
-    # TODO
-    raise NotImplementedError
+    # nonzerofraction=
+    # numberofnonzeroresidualcoefficients (divided by)
+    # totalnumberofresidualcoefficients
 
+    num_nonzero = 0
+    total_num = 0
+
+    # counting images from pyramid [:-1]
+    for level in pyramid[:-1]:
+        for row in level:
+                for coef in row:
+                    if coef != 0:
+                        num_nonzero += 1
+                    total_num += 1
+
+    # return a python float then check if within 0 or 1
+    fraction = float(num_nonzero/total_num)
+
+    if fraction > 1 or fraction < 0:
+        raise ValueError("error: fraction not in 0,1")
+
+    return fraction
 
 # -----------------------------------------------------------------------------
 # The helper functions below are provided. You do not need to modify them.
