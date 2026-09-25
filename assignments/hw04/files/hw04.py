@@ -21,7 +21,14 @@ def log_magnitude_spectrum(image):
     # 2. Center axes (0, 1) with np.roll; shifts are (M//2, N//2).
     # 3. cv2.magnitude(F[..., 0], F[..., 1]), then np.log1p.
     # TODO: return the centered log-magnitude image.
-    raise NotImplementedError("Complete log_magnitude_spectrum")
+    dft_image = cv2.dft(image, flags = cv2.DFT_COMPLEX_OUTPUT)
+    M, N, _ = dft_image.shape
+    centered = np.roll(dft_image, (M//2, N//2), axis = (0,1))
+    real_channels = centered[:,:,0]
+    imaginary_channels = centered[:,:,1]
+    magnitude = cv2.magnitude(real_channels, imaginary_channels)
+    final_image = np.log1p(magnitude)
+    return final_image
 
 
 def gaussian_frequency_mask(shape, sigma):
@@ -51,7 +58,13 @@ def apply_frequency_filter(image, mask):
     # 3. Undo the exact shifts: (-(M//2), -(N//2)).
     # 4. cv2.idft(..., flags=cv2.DFT_SCALE | cv2.DFT_REAL_OUTPUT).
     # TODO: return the filtered float32 image without clipping.
-    raise NotImplementedError("Complete apply_frequency_filter")
+    complex_dft = cv2.dft(image, flags = cv2.DFT_COMPLEX_OUTPUT)
+    M, N, _ = complex_dft.shape
+    centered = np.roll(complex_dft, (M//2, N//2), axis = (0,1))
+    multiplied = centered * mask[..., None]
+    shif_undone = np.roll(multiplied, (-(M // 2), -(N // 2)), axis=(0, 1))
+    final_image = cv2.idft(shif_undone, flags=cv2.DFT_SCALE | cv2.DFT_REAL_OUTPUT)
+    return final_image
 
 
 def make_hybrid_image(image_low, image_high, sigma_low, sigma_high):
@@ -70,7 +83,16 @@ def make_hybrid_image(image_low, image_high, sigma_low, sigma_high):
     # 4. Pass image_high and (1 - second_mask) to YOUR filter function.
     # 5. Average the two resulting images and return (low, high, hybrid).
     # TODO: connect the provided helper and your filter function.
-    raise NotImplementedError("Complete make_hybrid_image")
+    # returned_array = np.array([], dtype=np.float32)
+    low_pass_mask = gaussian_frequency_mask(image_low.shape, sigma_low)
+    low = apply_frequency_filter(image_low, low_pass_mask)
+    high_pass_mask = gaussian_frequency_mask(image_high.shape, sigma_high)
+    high_pass_mask = 1 - high_pass_mask 
+    high = apply_frequency_filter(image_high, high_pass_mask)
+    hybrid = (low + high)/2
+    #tup = (low, high, hybrid)
+    #returned_array = np.append(returned_array, tup)
+    return low, high, hybrid
 
 
 # Everything below is provided. Keep its output contract unchanged.
