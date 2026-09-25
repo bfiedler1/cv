@@ -30,6 +30,21 @@ docs/lectures/pdf/*.pdf
 # Private lecture sources and assets
 /lectures/
 
+# private sources and possible output copies
+/exams_private/
+/assignments_private/
+/code_private/
+/docs/exams_private/
+/docs/assignments_private/
+/docs/code_private/
+/_freeze/exams_private/
+/_freeze/assignments_private/
+/_freeze/code_private/
+
+# Private files, folders, and generated copies at any depth
+*_private*
+
+
 # ============================================================
 # Source styling files
 # Rendered CSS needed by the public website is copied into docs/
