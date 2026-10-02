@@ -49,7 +49,12 @@ def compute_gradients(image, sigma):
     Keep signed derivatives; angle is np.arctan2(Iy, Ix), in radians.
     """
     # TODO: follow Part 1 in the assignment.
-    raise NotImplementedError("Complete compute_gradients")
+    hx, hy = gaussian_derivative_kernels(sigma)
+    ix = cv2.filter2D(image, -1, hx, cv2.BORDER_REFLECT_101)
+    iy = cv2.filter2D(image, -1, hy, cv2.BORDER_REFLECT_101)
+    magnitude = np.sqrt(ix**2 + iy**2)
+    angle = np.arctan2(iy, ix)
+    return (ix, iy, magnitude, angle)
 
 
 def nonmaximum_suppression(magnitude, angle):
@@ -60,7 +65,12 @@ def nonmaximum_suppression(magnitude, angle):
     Do not modify either input.
     """
     # TODO: follow Part 2 in the assignment.
-    raise NotImplementedError("Complete nonmaximum_suppression")
+    # magnitude is a row col 2d array
+    forward, backward = sample_along_gradient(magnitude, angle)
+    condition = (magnitude > forward) & (magnitude >= backward)
+    result = np.where(condition, magnitude, 0)
+    result[[0, -1], :] = 0
+    return result
 
 
 def hysteresis_threshold(response, low, high):
@@ -71,13 +81,33 @@ def hysteresis_threshold(response, low, high):
     Valid thresholds satisfy 0 <= low <= high. Do not change response.
     """
     # TODO: follow Part 3 in the assignment.
-    raise NotImplementedError("Complete hysteresis_threshold")
+    #     Identify:
+
+    # Candidate pixels: response >= low and response > 0.
+    # Strong pixels: candidate pixels with response >= high.
+    # Weak pixels: the remaining candidate pixels.
+    # Create Boolean arrays for candidate and strong pixels using comparisons and &
+    candidates_condition = (response >= low) & (response > 0)
+    strong_condition = (candidates_condition) & (response >= high)
+    number_of_labels, labels = cv2.connectedComponents(candidates_condition.astype(np.uint8), connectivity = 8)
+    # labels contains an integer label for each pixel. Pixels in the same candidate component share a label. Label 0 is the background; the returned count includes it.
+    strong_labels = labels[strong_condition]
+    strong_labels = np.unique(strong_labels)
+    # Make a Boolean lookup array of length number_of_labels, initially all False. Mark labels containing strong pixels as True. Always leave label 0 as False.
+    keep = np.zeros(number_of_labels, dtype=bool)
+    # Indexing the lookup array with labels gives the final Boolean image
+    keep[strong_labels] = True
+    result = keep[labels]
+    return result
 
 
 def detect_edges(image, sigma, low, high):
     """Call your three functions in order and return the final bool edge map."""
     # TODO: follow Part 4 in the assignment.
-    raise NotImplementedError("Complete detect_edges")
+    ix, iy, magnitude, angle = compute_gradients(image, sigma)
+    thinned_magnitude = nonmaximum_suppression(magnitude, angle)
+    bool_map = hysteresis_threshold(thinned_magnitude, low, high)
+    return bool_map
 
 
 # Everything below is PROVIDED. Leave it unchanged.
