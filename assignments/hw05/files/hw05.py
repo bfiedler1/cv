@@ -70,6 +70,8 @@ def nonmaximum_suppression(magnitude, angle):
     condition = (magnitude > forward) & (magnitude >= backward)
     result = np.where(condition, magnitude, 0)
     result[[0, -1], :] = 0
+    # I totally forgot to add the analogus for columns 
+    result[:, [0, -1]] = 0
     return result
 
 
