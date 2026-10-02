@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Kaveh Fathian">
+  <title>Computer Vision – Lecture 07 — Feature Points</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-e29227cb4367bc74b13779e945f9984f.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Lecture 07 — Feature Points</h1>
+  <p class="subtitle">Lecture 7</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Kaveh Fathian
+</div>
+        <p class="quarto-title-affiliation">
+            Computer Science Department, Colorado School of Mines
+          </p>
+    </div>
+</div>
+
+</section>
+<section id="how-can-we-overlay-these-images-to-create-a-panorama" class="slide level2">
+<h2>How Can We Overlay These Images to Create a Panorama?</h2>
+<div id="1496a0ac" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-2-output-1.png" class="quarto-figure quarto-figure-center" width="1430" height="458"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Which points would you use to align these images?</strong></p>
+<ul>
+<li>Find recognizable details that appear in both views.</li>
+<li>Consider building corners, roof shapes, and other distinctive patterns.</li>
+</ul>
+</section>
+<section id="find-corresponding-points" class="slide level2">
+<h2>Find Corresponding Points</h2>
+<div id="12eab834" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-3-output-1.png" class="quarto-figure quarto-figure-center" width="1430" height="458"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Each numbered pair identifies the same scene location in both images.</li>
+<li>These correspondences tell us how to align the two views.</li>
+</ul>
+</section>
+<section id="align-the-images-to-create-a-panorama" class="slide level2">
+<h2>Align the Images to Create a Panorama</h2>
+<div id="defb3f9c" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-4-output-1.png" class="quarto-figure quarto-figure-center" width="1244" height="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Aligning and combining the overlapping views recovers the original panorama.</li>
+</ul>
+<p><strong>What makes a point easy to recognize and find again?</strong></p>
+</section>
+<section id="what-is-an-image-feature" class="slide level2">
+<h2>What Is an Image Feature?</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Image feature</strong></p>
+</div>
+<div class="callout-content">
+<p>A measurable visual property or pattern that helps us analyze or compare images.</p>
+</div>
+</div>
+</div>
+<ul>
+<li>Features can include <strong>edges</strong>, <strong>corners</strong>, <strong>blobs</strong>, and <strong>texture</strong> patterns.</li>
+<li>In this lecture, we focus on <strong>corners</strong> as <strong>local features</strong>: small image regions that we can detect and match across images.</li>
+<li>A <strong>keypoint</strong> specifies the location of an interesting point.</li>
+<li>A <strong>descriptor</strong> summarizes the surrounding appearance as numbers for comparison.</li>
+</ul>
+</div><div class="column" style="width:45%;">
+<div id="d6e5e3f6" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-5-output-1.png" class="quarto-figure quarto-figure-center" width="710" height="543"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="small">
+<p>The marked point provides a location. Its neighborhood provides an appearance we can compare.</p>
+</div>
+</div></div>
+</section>
+<section id="connection-of-filtering-edges-and-corners" class="slide level2">
+<h2>Connection of Filtering, Edges, and Corners</h2>
+<div id="5e92f409" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-6-output-1.png" class="quarto-figure quarto-figure-center" width="1336" height="331"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Filtering</strong> gives us a tool to process images: smoothing to reduce noise, taking derivative to measure local intensity changes.</li>
+<li><strong>Edges</strong>: Large gradient magnitudes indicate strong intensity changes in the image, primarily across an edge.</li>
+<li><strong>Corners</strong>: Where edges meet or turn sharply, intensity changes in multiple directions within the neighborhood.</li>
+</ul>
+</section>
+<section id="applications-of-image-features" class="slide level2 small">
+<h2>Applications of Image Features</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="7eed4cff" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-7-output-1.png" class="quarto-figure quarto-figure-center" width="690" height="434"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="center">
+<p>Localization and mapping</p>
+</div>
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/ufvPS5wJAx0?start=77" title="Localization and mapping" style="border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
+</iframe>
+</div></div>
+<ul>
+<li><strong>Image alignment</strong>: match overlapping views to create panoramas.</li>
+<li><strong>Object recognition</strong>: match a query image or object against stored images.</li>
+<li><strong>Motion tracking</strong>: follow feature points across video frames.</li>
+<li><strong>3D reconstruction and localization</strong>: track or match features across views to estimate scene structure and camera motion.</li>
+</ul>
+<p><strong>The common ingredient is finding the same scene points/features across images.</strong></p>
+</section>
+<section id="main-components-of-local-feature-matching" class="slide level2">
+<h2>Main Components of Local Feature Matching</h2>
+<div id="26d0c861" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-8-output-1.png" class="quarto-figure quarto-figure-center" width="1338" height="356"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:33%;">
+<h3 id="detection">1. Detection</h3>
+<p>Find a set of distinctive features (aka, keypoints).</p>
+</div><div class="column" style="width:34%;">
+<h3 id="description">2. Description</h3>
+<p>Extract a feature descriptor around each interest point as a vector.</p>
+</div><div class="column" style="width:33%;">
+<h3 id="matching">3. Matching</h3>
+<p>Compute distances between feature vectors to find correspondences.</p>
+</div></div>
+</section>
+<section id="what-makes-a-good-feature" class="slide level2 small">
+<h2>What Makes a Good Feature?</h2>
+<p>A useful feature should be easy to find again, easy to distinguish from other features, and efficient to represent and compare.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Property</th>
+<th style="text-align: left;">What we want</th>
+<th style="text-align: left;">Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Repeatability</td>
+<td style="text-align: left;">Detect the same scene point across changes in viewpoint, scale, and lighting.</td>
+<td style="text-align: left;">A point cannot be matched if we fail to detect it again.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Distinctiveness</td>
+<td style="text-align: left;">A local appearance that differs from other candidate points.</td>
+<td style="text-align: left;">Similar-looking regions can produce ambiguous matches.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Efficiency and compactness</td>
+<td style="text-align: left;">A manageable number of keypoints with compact descriptors.</td>
+<td style="text-align: left;">Detection, storage, and matching should remain practical.</td>
+</tr>
+</tbody>
+</table>
+<div id="815174bd" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-9-output-1.png" class="quarto-figure quarto-figure-center" width="704" height="330"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="corner-detection" class="slide level2 center">
+<h2>Corner Detection</h2>
+<p><strong>1. Detection</strong>   <span class="gray">2. Description</span>   <span class="gray">3. Matching</span></p>
+<p><img data-src="assets/07_features/slide003_img01.jpg" style="border: 1px solid #555;" height="420"></p>
+</section>
+<section id="how-can-we-detect-image-corners" class="slide level2">
+<h2>How Can We Detect Image Corners?</h2>
+<div id="777254c5" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-10-output-1.png" class="quarto-figure quarto-figure-center" width="1259" height="437"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Imagine shifting each yellow window slightly and comparing its pixel values with the original patch.</p>
+<ul>
+<li>Along a straight edge, several nearby positions look similar.</li>
+<li>Around a corner, shifts in any direction change the patch, helping us locate it in both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</li>
+</ul>
+</section>
+<section id="measuring-change-with-a-shifted-window" class="slide level2">
+<h2>Measuring Change with a Shifted Window</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p>Keep a reference window <span class="math inline">\(W\)</span> fixed and compare it with a shifted window in the same image.</p>
+<p><span class="math display">\[
+E(u,v)=\sum_{(x,y)\in W}\left[I(x+u,y+v)-I(x,y)\right]^2
+\]</span></p>
+<ul>
+<li><span class="math inline">\(u\)</span> is the horizontal shift, and <span class="math inline">\(v\)</span> is the vertical shift, in pixels.</li>
+<li>Positive <span class="math inline">\(u\)</span> moves right; positive <span class="math inline">\(v\)</span> moves down.</li>
+<li>Compare corresponding pixels, square their differences, and add them.</li>
+</ul>
+<p>This defines the <strong>auto-correlation</strong> error <span class="math inline">\(E(u,v)\)</span>: one number for each shift.</p>
+</div><div class="column" style="width:45%;">
+<div id="6c2a6c8a" class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-11-output-1.png" class="quarto-figure quarto-figure-center" width="411" height="446"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="small">
+<p>Blue: the reference 3×3 window. Orange: the window shifted one pixel right, <span class="math inline">\((u,v)=(1,0)\)</span>.</p>
+</div>
+</div></div>
+</section>
+<section id="one-shift-one-auto-correlation-value" class="slide level2">
+<h2>One Shift, One Auto-correlation Value</h2>
+<div id="bcd0b747" class="cell" data-execution_count="11">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-12-output-1.png" class="quarto-figure quarto-figure-center" width="1309" height="321"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+E(1,0)=\sum (B-A)^2=1+1=2
+\]</span></p>
+<ul>
+<li>Only two pixels change in this example; each contributes <span class="math inline">\(1\)</span> to the sum.</li>
+<li>With no shift, every pixel matches itself: <span class="math inline">\(E(0,0)=0\)</span>.</li>
+<li>Squaring prevents positive and negative differences from canceling.</li>
+</ul>
+</section>
+<section id="from-individual-shifts-to-the-response-map" class="slide level2">
+<h2>From Individual Shifts to the Response Map</h2>
+<div id="4aa7eba0" class="cell" data-execution_count="12">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-13-output-1.png" class="quarto-figure quarto-figure-center" width="1263" height="416"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Repeat the calculation for each shift: <span class="math inline">\(u,v\in\{-2,-1,0,1,2\}\)</span>.</li>
+<li>The orange cell is the previous result, <span class="math inline">\(E(1,0)=2\)</span>. The center is <span class="math inline">\(E(0,0)=0\)</span>.</li>
+<li>This map is indexed by <strong>shifts</strong>, not by image locations. The reference window stays fixed.</li>
+</ul>
+</section>
+<section id="flat-edge-and-corner-response-surfaces" class="slide level2">
+<h2>Flat, Edge, and Corner Response Surfaces</h2>
+<div id="bf532811" class="cell" data-execution_count="13">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-14-output-1.png" class="quarto-figure quarto-figure-center" width="1238" height="569"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="tiny">
+<p>All three use the same 3×3 window, shifts, and vertical scale. The red point marks <span class="math inline">\((u,v)=(0,0)\)</span>.</p>
+</div>
+<ul>
+<li><strong>Flat region</strong>: <span class="math inline">\(E\)</span> stays zero. Edge: <span class="math inline">\(E\)</span> stays low along the edge, forming a valley.</li>
+<li><strong>Corner</strong>: <span class="math inline">\(E\)</span> increases for small shifts in every direction, giving an isolated minimum.</li>
+</ul>
+</section>
+<section id="reading-the-auto-correlation-response" class="slide level2">
+<h2>Reading the Auto-correlation Response</h2>
+<p>We compare a window with shifted versions of itself using the auto-correlation error</p>
+<p><span class="math display">\[
+E(u,v)=\sum_{(x,y)\in W}\left[I(x+u,y+v)-I(x,y)\right]^2.
+\]</span></p>
+<ul>
+<li>At zero shift, the window matches itself, so <span class="math inline">\(E(0,0)=0\)</span>.</li>
+<li><strong>Small values</strong> mean that the shifted window looks <strong>similar</strong> to the reference window.</li>
+<li><strong>Large values</strong> mean that the shifted window looks <strong>different</strong>.</li>
+<li>At a <strong>corner</strong>, <span class="math inline">\(E(u,v)\)</span> <strong>rises strongly as we move away from zero in every direction</strong>.</li>
+</ul>
+<p>So, to find corners, we are interested in the shape of the response around <span class="math inline">\((u,v)=(0,0)\)</span>.</p>
+<div id="f1e7115a" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-15-output-1.png" class="quarto-figure quarto-figure-center" width="670" height="258"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-window-function" class="slide level2">
+<h2>The Window Function</h2>
+<div id="c631322c" class="cell" data-execution_count="15">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-16-output-1.png" class="quarto-figure quarto-figure-center" width="867" height="311"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+E(u,v)=\sum_{x,y} w(x,y)\left[I(x+u,y+v)-I(x,y)\right]^2
+\]</span></p>
+<ul>
+<li>Uniform weights count all pixels in the window equally. This is what we used so far.</li>
+<li>Gaussian weights emphasize the center and reduce the influence of pixels near the boundary.</li>
+<li>Weights are zero outside the window. The weights multiply the squared differences.</li>
+</ul>
+</section>
+<section id="a-naive-corner-detection-algorithm" class="slide level2">
+<h2>A Naive Corner-Detection Algorithm</h2>
+<div id="1546ec36" class="cell" data-execution_count="16">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-17-output-1.png" class="quarto-figure quarto-figure-center" width="1123" height="435"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol type="1">
+<li>Place a window around each pixel in the image.</li>
+<li>Compute its auto-correlation <span class="math inline">\(E(u,v)\)</span> over a window.</li>
+<li>Pick corners where <span class="math inline">\(E(u,v)\)</span> increases strongly in every shift direction.</li>
+</ol>
+<p><strong>Is this algorithm practical?</strong></p>
+</section>
+<section id="naive-corner-detection-computational-complexity" class="slide level2">
+<h2>Naive Corner-Detection Computational Complexity</h2>
+<div id="2b06ff88" class="cell" data-results="asis" data-execution_count="17">
+<div class="cell-output cell-output-display cell-output-markdown">
+<p>For a 1920 × 1080 pixels image, compute an auto-correlation response at every pixel:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Calculation</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Image pixels</td>
+<td style="text-align: right;">2,073,600</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pixels in each window</td>
+<td style="text-align: right;"><span class="math inline">\(11\times11=121\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nonzero shifts per window</td>
+<td style="text-align: right;"><span class="math inline">\(11\times11-1=120\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pixel comparisons per image pixel</td>
+<td style="text-align: right;"><span class="math inline">\(121\times120=14,520\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total pixel comparisons</td>
+<td style="text-align: right;"><strong>30.1 billion</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Assuming <span class="math inline">\(10^8\)</span> pixel comparisons per second, this takes about <strong>5 minutes for one image</strong>.</p>
+</div>
+</div>
+<p>For an <span class="math inline">\(H\times W\)</span> image, a <span class="math inline">\(k\times k\)</span> window, and an <span class="math inline">\(m\times m\)</span> shift grid:</p>
+<p><span class="math display">\[
+N_{\text{comparisons}}\approx
+\underbrace{HW}_{\text{image pixels}}
+\times\underbrace{k^2}_{\text{window pixels}}
+\times\underbrace{(m^2-1)}_{\text{nonzero shifts}}.
+\]</span></p>
+<p>Computing auto-correlation at every pixel is impractical. <strong>Can we approximate <span class="math inline">\(E(u,v)\)</span> without testing every shift?</strong></p>
+<!-- At one number per second, counting from 1 to 2 million would take about 23 days nonstop. -->
+</section>
+<section id="approximating-the-auto-correlation-response" class="slide level2">
+<h2>Approximating the Auto-correlation Response</h2>
+<div id="b1d656f9" class="cell" data-execution_count="18">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-19-output-1.png" class="quarto-figure quarto-figure-center" width="1245" height="404"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Near zero shift, the auto-correlation response can be <strong>approximated</strong> by a <strong>quadratic surface</strong>.</li>
+<li>To detect corners, we need to know if the response stays low in any direction or rises in every direction.</li>
+<li>We will derive this surface from image gradients instead of computing auto-correlation.</li>
+<li><strong>Taylor expansion</strong> connects auto-correlation shape to a small matrix of image gradients.</li>
+</ul>
+</section>
+<section id="recall-taylor-series-expansion" class="slide level2 small">
+<h2>Recall: Taylor Series Expansion</h2>
+<ul>
+<li>Taylor series around a reference point <span class="math inline">\(a\)</span> for small <span class="math inline">\(h\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+f(a+h)=f(a)+f'(a)h+\frac{f''(a)}{2!}h^2+\frac{f'''(a)}{3!}h^3+\cdots
+\]</span></p>
+<ul>
+<li><p>Keeping terms through <span class="math inline">\(h^2\)</span> gives a <strong>quadratic approximation</strong>.</p></li>
+<li><p>For <span class="math inline">\(E(u,v)\)</span> near <span class="math inline">\((0,0)\)</span>, the corresponding approximation is</p></li>
+</ul>
+<p><span class="math display">\[
+E(u,v)\approx  E(0,0)+E_u u+E_v v
++\frac12\left(E_{uu}u^2+2E_{uv}uv+E_{vv}v^2\right).
+\]</span></p>
+<ul>
+<li>Derivative notations:</li>
+</ul>
+<p><span class="math display">\[E_u=\frac{\partial E}{\partial u},\qquad E_v=\frac{\partial E}{\partial v}. \]</span></p>
+<ul>
+<li><p><span class="math inline">\(E_{uu}\)</span> and <span class="math inline">\(E_{vv}\)</span> are second derivatives; <span class="math inline">\(E_{uv}\)</span> is the mixed derivative.</p></li>
+<li><p>All derivatives of <span class="math inline">\(E\)</span> in this expansion are evaluated at <span class="math inline">\((u,v)=(0,0)\)</span>.</p></li>
+</ul>
+</section>
+<section id="deriving-the-quadratic-approximation" class="slide level2 tiny">
+<h2>Deriving the Quadratic Approximation</h2>
+<div class="columns">
+<div class="column" style="width:49%;">
+<p>Define the intensity difference for a shifted window:</p>
+<p><span class="math display">\[
+E(u,v)=\sum_{x,y}w(x,y)(\Delta I)^2, \quad
+\Delta I=I(x+u,y+v)-I(x,y).
+\]</span></p>
+<ol type="1">
+<li>Differentiate with respect to the shift:</li>
+</ol>
+<p><span class="math display">\[
+\begin{aligned}
+E_u&amp;=2\sum w\,\Delta I\,\Delta I_u,\\
+E_v&amp;=2\sum w\,\Delta I\,\Delta I_v,
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\Delta I_u=\partial(\Delta I)/\partial u\)</span> and similarly for the other derivatives. The window weights stay fixed as we vary the shift.</p>
+<p>Differentiate once more:</p>
+<p><span class="math display">\[
+\begin{aligned}
+E_{uu}&amp;=2\sum w\left[(\Delta I_u)^2+\Delta I\,\Delta I_{uu}\right],\\
+E_{uv}&amp;=2\sum w\left[\Delta I_u\Delta I_v+\Delta I\,\Delta I_{uv}\right],\\
+E_{vv}&amp;=2\sum w\left[(\Delta I_v)^2+\Delta I\,\Delta I_{vv}\right].
+\end{aligned}
+\]</span></p>
+</div><div class="column" style="width:51%;">
+<ol start="2" type="1">
+<li>Evaluate at zero shift.</li>
+</ol>
+<p><span class="math display">\[
+\Delta I=0,\qquad \Delta I_u=I_x,\qquad \Delta I_v=I_y.
+\]</span></p>
+<p>The constant and linear terms vanish:</p>
+<p><span class="math display">\[E(0,0)=0,\qquad E_u(0,0)=E_v(0,0)=0.\]</span></p>
+<p>The second derivatives simplify to</p>
+<p><span class="math display">\[
+\begin{aligned}
+E_{uu}(0,0)&amp;=2\sum wI_x^2,\\
+E_{uv}(0,0)&amp;=2\sum wI_xI_y,\\
+E_{vv}(0,0)&amp;=2\sum wI_y^2.
+\end{aligned}
+\]</span></p>
+<p>Here, <span class="math inline">\(I_x\)</span> and <span class="math inline">\(I_y\)</span> are evaluated at the original pixel <span class="math inline">\((x,y)\)</span>.</p>
+<ol start="3" type="1">
+<li>Substitute into the Taylor expansion.</li>
+</ol>
+<p><span class="math display">\[
+\begin{aligned}
+E(u,v)&amp;\approx\frac12\left[2\Bigl(\sum wI_x^2\Bigr)u^2
++4\Bigl(\sum wI_xI_y\Bigr)uv+2\Bigl(\sum wI_y^2\Bigr)v^2\right]\\
+&amp;=\sum w\left(I_x^2u^2+2I_xI_yuv+I_y^2v^2\right).
+\end{aligned}
+\]</span></p>
+</div></div>
+</section>
+<section id="the-second-moment-matrix" class="slide level2 small">
+<h2>The Second Moment Matrix</h2>
+<p>The derivation gives a quadratic approximation:</p>
+<p><span class="math display">\[
+E(u,v)\approx
+\sum_{x,y} w\left(I_x^2u^2+2I_xI_yuv+I_y^2v^2\right)
+=
+\begin{bmatrix}u&amp;v\end{bmatrix}
+M
+\begin{bmatrix}u\\v\end{bmatrix}
+\]</span></p>
+<p>The second moment matrix, also called the <strong>structure tensor</strong>, is</p>
+<p><span class="math display">\[
+M=\sum_{x,y}w(x,y)
+\begin{bmatrix}
+I_x^2&amp;I_xI_y\\
+I_xI_y&amp;I_y^2
+\end{bmatrix}
+=\begin{bmatrix}A&amp;B\\B&amp;C\end{bmatrix}.
+\]</span></p>
+<p>Its three distinct entries are</p>
+<p><span class="math display">\[A=\sum_{x,y} wI_x^2,\qquad B=\sum_{x,y} wI_xI_y,\qquad C=\sum_{x,y} wI_y^2.\]</span></p>
+<ul>
+<li>To compute <span class="math inline">\(M\)</span>, first compute image derivatives <span class="math inline">\(I_x\)</span> and <span class="math inline">\(I_y\)</span>, then form these three weighted sums in each window.</li>
+<li>The matrix <span class="math inline">\(M\)</span> describes how the window changes for small shifts in any direction.</li>
+<li>Next, we will connect the entries of <span class="math inline">\(M\)</span> to the response shape and identify which shapes indicate corners.</li>
+</ul>
+</section>
+<section id="example-compute-m-for-a-small-image" class="slide level2">
+<h2>Example: Compute <span class="math inline">\(M\)</span> for a Small Image</h2>
+<div id="a79f5a25" class="cell" data-execution_count="19">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-20-output-1.png" class="quarto-figure quarto-figure-center" width="1246" height="362"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Find derivaties by filtering the image with <span class="math inline">\(h_x=[-1,0,1]\)</span> and <span class="math inline">\(h_y=h_x^T\)</span> kernels.</li>
+<li>The blue boxes show a 3×3 auto-correlation window.</li>
+<li>Next, form the gradient products and sum their values inside this window.</li>
+</ul>
+</section>
+<section id="example-compute-m-for-a-small-image-1" class="slide level2 small">
+<h2>Example: Compute <span class="math inline">\(M\)</span> for a Small Image</h2>
+<div id="0b304d52" class="cell" data-execution_count="20">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-21-output-1.png" class="quarto-figure quarto-figure-center" width="1250" height="423"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+A=\sum_{x,y} wI_x^2,\quad B=\sum_{x,y} wI_xI_y,\quad C=\sum_{x,y} wI_y^2 \quad \implies \quad
+M = \begin{bmatrix}A&amp;B\\B&amp;C\end{bmatrix}
+=\begin{bmatrix}4&amp;1\\1&amp;4\end{bmatrix}.
+\]</span></p>
+<ul>
+<li>Assume <span class="math inline">\(w=1\)</span> inside the 3×3 window. Sum only the values inside the window.</li>
+<li><span class="math inline">\(A\)</span> measures horizontal gradient energy, <span class="math inline">\(C\)</span> vertical gradient energy, and <span class="math inline">\(B\)</span> how the horizontal and vertical gradient components relate.</li>
+</ul>
+</section>
+<section id="the-shape-of-the-quadratic-response" class="slide level2 small">
+<h2>The Shape of the Quadratic Response</h2>
+<div id="aedcdf5d" class="cell" data-execution_count="21">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-22-output-1.png" class="quarto-figure quarto-figure-center" width="1159" height="437"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[M=\begin{bmatrix}4&amp;1\\1&amp;4\end{bmatrix}
+\qquad\Rightarrow\qquad E(u,v)\approx4u^2+2uv+4v^2.\]</span></p>
+<ul>
+<li>Each colored contour (or level set) joins <span class="math inline">\(u\)</span>-<span class="math inline">\(v\)</span> shifts with the same auto-correlation response.</li>
+<li>A nearby contour means a small shift already changes the patch substantially.</li>
+<li>This matrix gives closed contours: the response increases in every direction. Next, compare with a flat region or an edge.</li>
+</ul>
+</section>
+<section id="m-determines-the-contour-shape" class="slide level2">
+<h2><span class="math inline">\(M\)</span> Determines the Contour Shape</h2>
+<div id="b16fa13f" class="cell" data-execution_count="22">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-23-output-1.png" class="quarto-figure quarto-figure-center" width="1421" height="483"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Flat:</strong> <span class="math inline">\(M=0\)</span>, so the predicted response stays zero in every direction.</li>
+<li><strong>Edge:</strong> the contours are parallel lines. Moving along them gives little change.</li>
+<li><strong>Corner:</strong> the contours are closed ellipses. Moving away from zero in any direction changes the patch.</li>
+<li><strong>Can we guess the feature type directly from the elements of <span class="math inline">\(M\)</span>?</strong></li>
+</ul>
+</section>
+<section id="rotation-changes-the-entries-of-m" class="slide level2">
+<h2>Rotation Changes the Entries of M</h2>
+<div id="aac3bd72" class="cell" data-execution_count="23">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-24-output-1.png" class="quarto-figure quarto-figure-center" width="1396" height="455"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Rotating an edge changes the entries of <span class="math inline">\(M\)</span> without changing its feature type.</li>
+<li>For the diagonal edge, all diagonals are <span class="math inline">\(3\)</span>, but <span class="math inline">\(E\)</span> stays zero along the arrow. Reading the entries alone can be misleading!</li>
+<li>We need the directions and magnitudes of least and greatest change.</li>
+<li><strong>Eigenvectors identify these directions. Eigenvalues measure the change along them.</strong></li>
+</ul>
+</section>
+<section id="eigenvalues-measure-change-along-principal-directions" class="slide level2 small">
+<h2>Eigenvalues Measure Change Along Principal Directions</h2>
+<div id="e9e3f014" class="cell" data-execution_count="24">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-25-output-1.png" class="quarto-figure quarto-figure-center" width="1269" height="420"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[M\mathbf q_i=\lambda_i \mathbf q_i
+\qquad(\|\mathbf q_i\|=1).\]</span></p>
+<ul>
+<li><span class="math inline">\(\lambda_i\)</span> is an eigenvalues, and <span class="math inline">\(\mathbf q_i\)</span> is an eigenvector.</li>
+<li>Orange: the perpendicular direction of greatest change, with strength <span class="math inline">\(\lambda_{\max}\)</span>.</li>
+<li>Blue: the direction of least change, with strength <span class="math inline">\(\lambda_{\min}\)</span>.</li>
+<li>The <strong>edge has a zero eigenvalue</strong>. The <strong>corner has two large eigenvalues</strong>.</li>
+</ul>
+</section>
+<section id="rotation-preserves-the-eigenvalues" class="slide level2">
+<h2>Rotation Preserves the Eigenvalues</h2>
+<div id="f29aaa38" class="cell" data-execution_count="25">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-26-output-1.png" class="quarto-figure quarto-figure-center" width="1323" height="464"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The plots show the response for an image and its rotated version.</li>
+<li>Their <span class="math inline">\(M\)</span> matrices differ, but both have the same eigenvalues: <span class="math inline">\(\lambda_{\min}=3\)</span> and <span class="math inline">\(\lambda_{\max}=5\)</span>.</li>
+</ul>
+</section>
+<section id="reading-feature-type-from-eigenvalues" class="slide level2 small">
+<h2>Reading Feature Type from Eigenvalues</h2>
+<div id="c56f4fe4" class="cell" data-execution_count="26">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-27-output-1.png" class="quarto-figure quarto-figure-center" width="1238" height="455"></p>
+</figure>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Eigenvalues</th>
+<th style="text-align: left;">Response shape</th>
+<th style="text-align: left;">Feature type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Both small</td>
+<td style="text-align: left;">Nearly flat in every direction</td>
+<td style="text-align: left;">Flat region</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">One large, one small</td>
+<td style="text-align: left;">Valley with a direction of little change</td>
+<td style="text-align: left;">Edge</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Both large</td>
+<td style="text-align: left;">Bowl that rises strongly in every direction</td>
+<td style="text-align: left;">Corner</td>
+</tr>
+</tbody>
+</table>
+<p>Rotating a imaage patch changes its principal directions (eigenvectors), but preserves its eigenvalues and feature type.</p>
+</section>
+<section id="corner-angle-and-eigenvalues" class="slide level2">
+<h2>Corner Angle and Eigenvalues</h2>
+<div id="9311e922" class="cell" data-execution_count="27">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-28-output-1.png" class="quarto-figure quarto-figure-center" width="1551" height="540"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The 90° corner has the largest <span class="math inline">\(\lambda_{\min}\)</span>: even its weakest direction changes strongly.</li>
+<li>Very acute or obtuse corners have elongated contours and a smaller <span class="math inline">\(\lambda_{\min}\)</span>, making them more edge-like.</li>
+</ul>
+</section>
+<section id="classifying-image-points-using-eigenvalues-of-m" class="slide level2">
+<h2>Classifying Image Points Using Eigenvalues of <span class="math inline">\(M\)</span></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>Given <span class="math inline">\(\lambda_1\)</span> and <span class="math inline">\(\lambda_2\)</span> as eigenvalues of <span class="math inline">\(M\)</span>.</p></li>
+<li><p>Each point in the diagram has coordiantes <span class="math inline">\((\lambda_1, \lambda_2)\)</span>.</p></li>
+<li><p><strong>Flat region:</strong> both eigenvalues are small, so intensity changes little in any direction.</p></li>
+<li><p><strong>Edge:</strong> one eigenvalue dominates, so change is strong across the edge and weak along it.</p></li>
+<li><p><strong>Corner:</strong> both eigenvalues are large, so even the weakest direction has substantial change.</p></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div id="6e650962" class="cell" data-execution_count="28">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-29-output-1.png" class="quarto-figure quarto-figure-center" width="541" height="541"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-harris-corner-score" class="slide level2">
+<h2>The Harris Corner Score</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p>The <strong>Harris corner score</strong>, also called the <strong>cornerness score</strong>, combines both eigenvalues:</p>
+<p><span class="math display">\[R=\lambda_1\lambda_2-\alpha(\lambda_1+\lambda_2)^2.\]</span></p>
+<ul>
+<li><p><span class="blue"><strong>Large positive <span class="math inline">\(R\)</span>: corner candidate.</strong></span></p></li>
+<li><p><span class="orange"><strong>Negative <span class="math inline">\(R\)</span>: edge-like.</strong></span></p></li>
+<li><p><span class="gray"><strong>Small <span class="math inline">\(|R|\)</span>: weak response, often a flat region.</strong></span></p></li>
+<li><p><span class="math inline">\(\alpha=0.04\)</span> is a commonly used empirical value.</p>
+<ul>
+<li>Equal eigenvalues: <span class="math inline">\(R=(1-4\alpha)\lambda^2=0.84\lambda^2&gt;0\)</span>.</li>
+<li>Ideal edge (<span class="math inline">\(\lambda_{\min} = 0\)</span>): <span class="math inline">\(R=-0.04\lambda_{\max}^2&lt;0\)</span>.</li>
+</ul></li>
+<li><p>Increasing <span class="math inline">\(\alpha\)</span> rejects more unequal eigenvalue pairs (and mark them as non-corners). It is a tuning parameter, not a universal optimum.</p></li>
+</ul>
+</div><div class="column" style="width:45%;">
+<div id="748637d0" class="cell" data-execution_count="29">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-30-output-1.png" class="quarto-figure quarto-figure-center" width="541" height="579"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<!-- Sources: Harris & Stephens (1988), https://www.bmva-archive.org.uk/bmvc/1988/avc-88-023.pdf ; OpenCV Harris tutorial, https://docs.opencv.org/4.x/dc/d0d/tutorial_py_features_harris.html . -->
+</section>
+<section id="cornerness-without-computing-eigenvalues" class="slide level2">
+<h2>Cornerness Without Computing Eigenvalues</h2>
+<p>For any suqare matrix:</p>
+<ul>
+<li>The <strong>determinant</strong> is the <strong>product of all its eigenvalues</strong>.</li>
+<li>The <strong>trace</strong> is the <strong>sum of its diagonal entries</strong>, and also the <strong>sum of its eigenvalues</strong>.</li>
+</ul>
+<p>For <span class="math inline">\(M=\begin{bmatrix}A&amp;B\\ B&amp;C\end{bmatrix}\)</span>:</p>
+<p><span class="math display">\[\det(M)=AC-B^2=\lambda_1\lambda_2,
+\qquad \operatorname{tr}(M)=A+C=\lambda_1+\lambda_2.\]</span></p>
+<p>The Harris cornerness score <span class="math inline">\(R\)</span> can therefore be computed directly:</p>
+<p><span class="math display">\[R=\lambda_1\lambda_2-\alpha(\lambda_1+\lambda_2)^2
+=\det(M)-\alpha\operatorname{tr}(M)^2
+=(AC-B^2)-\alpha(A+C)^2.\]</span></p>
+<p><strong>Determinant and trace avoid explicit eigenvalue computation.</strong> For a 2×2 matrix, only a few multiplications and additions are needed, <strong>reducing computation at every image pixel</strong>.</p>
+</section>
+<section id="harris-corner-detector" class="slide level2">
+<h2>Harris Corner Detector</h2>
+<div class="tiny">
+<p>Recall <span class="math display">\[M(x,y)=\begin{bmatrix}A&amp;B\\ B&amp;C\end{bmatrix}, \quad
+A=\sum_{x,y} wI_x^2,\quad B=\sum_{x,y} wI_xI_y,\quad C=\sum_{x,y} wI_y^2
+\]</span> <span class="math display">\[R=\lambda_1\lambda_2-\alpha(\lambda_1+\lambda_2)^2
+=\det(M)-\alpha\operatorname{tr}(M)^2
+=(AC-B^2)-\alpha(A+C)^2.\]</span></p>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Harris corner detector Algorithm</strong></p>
+</div>
+<div class="callout-content">
+<table class="caption-top">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 47%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">Output</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Smooth the image, then compute image derivatives.</td>
+<td style="text-align: left;"><span class="math inline">\(I_x,\ I_y\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">Form the gradient products at each pixel.</td>
+<td style="text-align: left;"><span class="math inline">\(I_x^2,\ I_xI_y,\ I_y^2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Gaussian-average the products over a local window.</td>
+<td style="text-align: left;"><span class="math inline">\(A=g*I_x^2,\ B=g*(I_xI_y),\ C=g*I_y^2\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Compute the Harris score.</td>
+<td style="text-align: left;"><span class="math inline">\(R=AC-B^2-\alpha(A+C)^2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">Thresholding: Keep pixels with a sufficiently large positive score.</td>
+<td style="text-align: left;"><span class="math inline">\(R&gt;\tau\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">Non-maximum suppression: Keep local maxima of the score.</td>
+<td style="text-align: left;">Isolated corner locations</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div style="font-size: 0.6em;">
+<p>C. Harris and M. Stephens, “A Combined Corner and Edge Detector,” Alvey Vision Conference, 1988, pp.&nbsp;147–151. (~23,000 citations.)</p>
+</div>
+</section>
+<section id="harris-example" class="slide level2">
+<h2>Harris Example</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="29f2010f" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-label="1"></a><span class="im">import</span> cv2</span>
+<span id="cb1-2"><a aria-label="2"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a aria-label="3"></a></span>
+<span id="cb1-4"><a aria-label="4"></a>image_path <span class="op">=</span> (</span>
+<span id="cb1-5"><a aria-label="5"></a>    <span class="st">"assets/07_features/den_airport.jpg"</span>)</span>
+<span id="cb1-6"><a aria-label="6"></a>I_u8 <span class="op">=</span> cv2.imread(</span>
+<span id="cb1-7"><a aria-label="7"></a>    image_path, cv2.IMREAD_GRAYSCALE)</span>
+<span id="cb1-8"><a aria-label="8"></a>I <span class="op">=</span> I_u8.astype(np.float32) <span class="op">/</span> <span class="dv">255</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li>Which roof tips, window corners, and structural intersections should produce strong corner responses?</li>
+<li>Will a long, smooth roof edge give a strong corner response?</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="f6d10b3e" class="cell" data-execution_count="31">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-32-output-1.png" class="quarto-figure quarto-figure-center" width="749" height="566"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="step-1-compute-image-gradients" class="slide level2">
+<h2>Step 1: Compute Image Gradients</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="7659fac3" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-label="1"></a>sigma_d <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb2-2"><a aria-label="2"></a>J <span class="op">=</span> cv2.GaussianBlur(I, (<span class="dv">0</span>, <span class="dv">0</span>), sigma_d)</span>
+<span id="cb2-3"><a aria-label="3"></a></span>
+<span id="cb2-4"><a aria-label="4"></a>h_x <span class="op">=</span> np.array([</span>
+<span id="cb2-5"><a aria-label="5"></a>    [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb2-6"><a aria-label="6"></a>    [<span class="op">-</span><span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>],</span>
+<span id="cb2-7"><a aria-label="7"></a>    [<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb2-8"><a aria-label="8"></a>], dtype<span class="op">=</span>np.float32) <span class="op">/</span> <span class="dv">8</span></span>
+<span id="cb2-9"><a aria-label="9"></a></span>
+<span id="cb2-10"><a aria-label="10"></a>Ix <span class="op">=</span> cv2.filter2D(J, <span class="op">-</span><span class="dv">1</span>, h_x)</span>
+<span id="cb2-11"><a aria-label="11"></a>Iy <span class="op">=</span> cv2.filter2D(J, <span class="op">-</span><span class="dv">1</span>, h_x.T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li>Smoothing reduces the effect of noise before differentiation.</li>
+<li><span class="math inline">\(I_x\)</span> measures horizontal intensity change; <span class="math inline">\(I_y\)</span> measures vertical intensity change.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="93c289fa" class="cell" data-execution_count="33">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-34-output-1.png" class="quarto-figure quarto-figure-center" width="729" height="305"></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="font-size: 0.6em;">
+<p>White and black indicate opposite derivative signs. Mid-gray indicates little change.</p>
+</div>
+</div></div>
+</section>
+<section id="step-2-form-the-gradient-products" class="slide level2">
+<h2>Step 2: Form the Gradient Products</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="053aeb5a" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a aria-label="1"></a>Pxx <span class="op">=</span> Ix <span class="op">*</span> Ix</span>
+<span id="cb3-2"><a aria-label="2"></a>Pxy <span class="op">=</span> Ix <span class="op">*</span> Iy</span>
+<span id="cb3-3"><a aria-label="3"></a>Pyy <span class="op">=</span> Iy <span class="op">*</span> Iy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li>Squaring gives nonnegative horizontal and vertical gradient energies.</li>
+<li><span class="math inline">\(I_xI_y\)</span> records how the two gradient components vary together. It can be positive or negative.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="63e96c14" class="cell" data-execution_count="35">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-36-output-1.png" class="quarto-figure quarto-figure-center" width="673" height="537"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="step-3-build-the-second-moment-matrix" class="slide level2">
+<h2>Step 3: Build the Second Moment Matrix</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="200e9c39" class="cell" data-execution_count="36">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a aria-label="1"></a>sigma_w <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb4-2"><a aria-label="2"></a>A <span class="op">=</span> cv2.GaussianBlur(Pxx, (<span class="dv">0</span>, <span class="dv">0</span>), sigma_w)</span>
+<span id="cb4-3"><a aria-label="3"></a>B <span class="op">=</span> cv2.GaussianBlur(Pxy, (<span class="dv">0</span>, <span class="dv">0</span>), sigma_w)</span>
+<span id="cb4-4"><a aria-label="4"></a>C <span class="op">=</span> cv2.GaussianBlur(Pyy, (<span class="dv">0</span>, <span class="dv">0</span>), sigma_w)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><span class="math display">\[M(x,y)=\begin{bmatrix}A&amp;B\\B&amp;C\end{bmatrix}.\]</span></p>
+<ul>
+<li>Gaussian filter combines gradient from neighboring pixels over the kernel window, e.g., to get <span class="math inline">\(A=\sum_{x,y} wI_x^2\)</span>.</li>
+<li><span class="math inline">\(\sigma_w\)</span> sets the neighborhood size. It serves a <em>different purpose</em> from the initial smoothing scale <span class="math inline">\(\sigma_d\)</span>.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="b8197eb8" class="cell" data-execution_count="37">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-38-output-1.png" class="quarto-figure quarto-figure-center" width="673" height="537"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="step-4-compute-the-harriscornerness-score" class="slide level2">
+<h2>Step 4: Compute the Harris/Cornerness Score</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="5f963e79" class="cell" data-execution_count="38">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a aria-label="1"></a>alpha <span class="op">=</span> <span class="fl">0.04</span></span>
+<span id="cb5-2"><a aria-label="2"></a></span>
+<span id="cb5-3"><a aria-label="3"></a>detM <span class="op">=</span> A <span class="op">*</span> C <span class="op">-</span> B<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb5-4"><a aria-label="4"></a>traceM <span class="op">=</span> A <span class="op">+</span> C</span>
+<span id="cb5-5"><a aria-label="5"></a>R <span class="op">=</span> detM <span class="op">-</span> alpha <span class="op">*</span> traceM<span class="op">**</span><span class="dv">2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><span class="math display">\[R(x,y)=\det(M)-\alpha\operatorname{tr}(M)^2.\]</span></p>
+<ul>
+<li>Large positive responses indicate corner candidates.</li>
+<li>Negative responses indicate a dominant edge direction.</li>
+<li>The sky has little gradient energy, so its response stays near zero.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="4884749c" class="cell" data-execution_count="39">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-40-output-1.png" class="quarto-figure quarto-figure-center" width="676" height="579"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="step-5-threshold-the-corner-response" class="slide level2">
+<h2>Step 5: Threshold the Corner Response</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="38186fcd" class="cell" data-execution_count="40">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a aria-label="1"></a>quality <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb6-2"><a aria-label="2"></a>threshold <span class="op">=</span> quality <span class="op">*</span> R.<span class="bu">max</span>()</span>
+<span id="cb6-3"><a aria-label="3"></a>candidates <span class="op">=</span> (R <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> (R <span class="op">&gt;</span> threshold)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li>Keep only sufficiently strong positive responses.</li>
+<li>Increasing the threshold removes weaker candidates.</li>
+<li>One corner often produces a cluster of selected pixels. Thresholding alone does not choose a single location.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="6a67fbff" class="cell" data-execution_count="41">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-42-output-1.png" class="quarto-figure quarto-figure-center" width="714" height="578"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="step-6-non-maximum-suppression" class="slide level2">
+<h2>Step 6: Non-Maximum Suppression</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="34eb47c8" class="cell" data-execution_count="42">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-label="1"></a>window <span class="op">=</span> np.ones((<span class="dv">13</span>, <span class="dv">13</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb7-2"><a aria-label="2"></a>local_max <span class="op">=</span> cv2.dilate(R, window)</span>
+<span id="cb7-3"><a aria-label="3"></a>corners <span class="op">=</span> candidates <span class="op">&amp;</span> (R <span class="op">==</span> local_max)</span>
+<span id="cb7-4"><a aria-label="4"></a>y, x <span class="op">=</span> np.nonzero(corners)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li>Dilation gives the largest score in each 13×13 neighborhood.</li>
+<li>Keep a candidate only if its score equals the neighborhood maximum.</li>
+<li>A larger neighborhood suppresses nearby peaks more strongly.</li>
+<li>The selected points concentrate near roof tips, window corners, and structural intersections.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="375dde38" class="cell" data-execution_count="43">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-44-output-1.png" class="quarto-figure quarto-figure-center" width="714" height="578"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="harris-corner-detection-in-opencv" class="slide level2">
+<h2>Harris Corner Detection in OpenCV</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div id="43204c3d" class="cell" data-execution_count="44">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a aria-label="1"></a>R_cv <span class="op">=</span> cv2.cornerHarris(</span>
+<span id="cb8-2"><a aria-label="2"></a>    I, blockSize<span class="op">=</span><span class="dv">5</span>, ksize<span class="op">=</span><span class="dv">3</span>, k<span class="op">=</span><span class="fl">0.04</span>)</span>
+<span id="cb8-3"><a aria-label="3"></a></span>
+<span id="cb8-4"><a aria-label="4"></a>threshold <span class="op">=</span> <span class="fl">0.01</span> <span class="op">*</span> R_cv.<span class="bu">max</span>()</span>
+<span id="cb8-5"><a aria-label="5"></a>window <span class="op">=</span> np.ones((<span class="dv">13</span>, <span class="dv">13</span>), dtype<span class="op">=</span>np.uint8)</span>
+<span id="cb8-6"><a aria-label="6"></a>local_max <span class="op">=</span> cv2.dilate(R_cv, window)</span>
+<span id="cb8-7"><a aria-label="7"></a>corners_cv <span class="op">=</span> ((R_cv <span class="op">&gt;</span> threshold)</span>
+<span id="cb8-8"><a aria-label="8"></a>              <span class="op">&amp;</span> (R_cv <span class="op">==</span> local_max))</span>
+<span id="cb8-9"><a aria-label="9"></a>y_cv, x_cv <span class="op">=</span> np.nonzero(corners_cv)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="height: 25px;">
+
+</div>
+<ul>
+<li><code>blockSize=5</code>: combine gradient products over a 5×5 neighborhood to form <span class="math inline">\(M\)</span>.</li>
+<li><code>ksize=3</code>: use 3×3 Sobel filters to compute image derivatives.</li>
+<li><code>k=0.04</code>: the Harris parameter <span class="math inline">\(\alpha\)</span> in <span class="math inline">\(R=\det(M)-\alpha\operatorname{tr}(M)^2\)</span>.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="69b4f81b" class="cell" data-execution_count="45">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-46-output-1.png" class="quarto-figure quarto-figure-center" width="714" height="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="font-size: 0.75em;">
+<p><code>cornerHarris</code> returns a score at each pixel. We then apply thresholding and non-maximum suppression.</p>
+</div>
+</div></div>
+<aside class="notes">
+<p>OpenCV uses a box window to combine gradient products, so its response can differ from our Gaussian-weighted example. <code>borderType</code> optionally controls how image borders are handled and defaults to <code>cv2.BORDER_DEFAULT</code>.</p>
+<p><a href="https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html">OpenCV cornerHarris documentation</a></p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="invariance-and-covariance" class="slide level2">
+<h2>Invariance and Covariance</h2>
+<ul>
+<li><strong>Invariance:</strong> changing image intensities should leave the detected <strong>locations unchanged</strong>.</li>
+<li><strong>Covariance (equivariance):</strong> moving the image should move the detected points <strong>with it</strong>.</li>
+</ul>
+<div id="f9c454a6" class="cell" data-execution_count="46">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-47-output-1.png" class="quarto-figure quarto-figure-center" width="1555" height="427"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="harris-under-affine-intensity-changes" class="slide level2">
+<h2>Harris Under Affine Intensity Changes</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<p>For <span class="math inline">\(I'=aI+b\)</span>, with constant <span class="math inline">\(a&gt;0\)</span> and <span class="math inline">\(b\)</span>:</p>
+<p><span class="math display">\[\nabla I'=a\nabla I,\qquad M'=a^2M,\]</span> <span class="math display">\[\boxed{R'=a^4R}.\]</span></p>
+<div style="height: 20px;">
+
+</div>
+<ul>
+<li><strong>Brightness offset <span class="math inline">\(b\)</span>:</strong> derivatives and scores stay unchanged.</li>
+<li><strong>Contrast gain <span class="math inline">\(a\)</span>:</strong> peak locations stay unchanged, but score magnitudes change.</li>
+<li>A <strong>fixed threshold</strong> can select different corners.</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<div id="e5d37b54" class="cell" data-execution_count="47">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-48-output-1.png" class="quarto-figure quarto-figure-center" width="722" height="492"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div class="column" style="width:100%;">
+<ul>
+<li>A <strong>relative threshold</strong> <span class="math inline">\(R&gt;q\max(R)\)</span> scales with the response and preserves the selection in this ideal model.</li>
+<li>But clipping, quantization, noise, and spatially varying illumination can break this ideal behavior.</li>
+</ul>
+</div></section>
+<section id="harris-under-image-translation" class="slide level2">
+<h2>Harris Under Image Translation</h2>
+<p>For a translation <span class="math inline">\(\mathbf{t}=(\Delta x,\Delta y)^T\)</span>, corresponding corners move from <span class="math inline">\(\mathbf{x}\)</span> to <span class="math inline">\(\mathbf{x}+\mathbf{t}\)</span>.</p>
+<div id="603cec65" class="cell" data-execution_count="48">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-49-output-1.png" class="quarto-figure quarto-figure-center" width="1436" height="527"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>The derivative filters and local averaging window apply the <strong>same operation at every location</strong>.</li>
+<li>The response map shifts with the image: <span class="math inline">\(R'(\mathbf{x}+\mathbf{t})=R(\mathbf{x})\)</span>.</li>
+</ul>
+</section>
+<section id="harris-under-image-rotation" class="slide level2">
+<h2>Harris Under Image Rotation</h2>
+<p>For a rotation matrix <span class="math inline">\(Q\)</span>, the second moment matrix changes orientation while <strong>its eigenvalues and Harris score stay unchanged</strong>.</p>
+<p><span class="math display">\[M'=QMQ^T\quad\Longrightarrow\quad \lambda_1'=\lambda_1,\ \lambda_2'=\lambda_2,\ R'=R.\]</span></p>
+<div id="3da0a325" class="cell" data-execution_count="49">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-50-output-1.png" class="quarto-figure quarto-figure-center" width="1545" height="466"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Corner locations are covariant:</strong> the points rotate with the image.</li>
+</ul>
+</section>
+<section id="harris-under-scaling" class="slide level2">
+<h2>Harris Under Scaling</h2>
+<p>A window that contains <strong>several gradient directions</strong> at one scale may see <strong>only a short, nearly straight edge</strong> after enlargement.</p>
+<div id="4a6c2560" class="cell" data-execution_count="50">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-51-output-1.png" class="quarto-figure quarto-figure-center" width="1441" height="424"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><strong>Harris with a fixed window size is not scale covariant.</strong> Resizing the image can change which corners are detected.</li>
+<li>To handle scale changes, we need to adjust the smoothing scale and neighborhood size.</li>
+</ul>
+</section>
+<section id="scaling-the-airport-image" class="slide level2">
+<h2>Scaling the Airport Image</h2>
+<p>We halve the image width and height, then rerun Harris with unchanged settings:</p>
+<div id="a730c75f" class="cell" data-execution_count="51">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="07_features_files/figure-revealjs/cell-52-output-1.png" class="quarto-figure quarto-figure-center" width="880" height="455"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Cyan boxes: the same 13×13 max-suppression window. It covers more of the scene in the smaller image.</li>
+<li><strong>Different corners survive:</strong> shrinking changes image detail, and the fixed window suppresses more nearby peaks.</li>
+<li><strong>Harris is not scale covariant.</strong> We need to detect features across multiple scales.</li>
+</ul>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Computer Vision; Colorado School of Mines | Kaveh Fathian</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'pdfMaxPagesPerSlide': 1,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
