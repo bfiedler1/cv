@@ -58,8 +58,12 @@ def extract_sift(image, nfeatures=800):
     """
     # TODO: follow the corresponding assignment section.
     detector = cv2.SIFT_create(nfeatures=nfeatures)
-    
-    raise NotImplementedError("Complete extract_sift")
+    # googled the detect and compute function to see return values
+    keypoints, descriptors = detector.detectAndCompute(image, None)
+    # should check the if condition
+    if descriptors is None:
+        return [], np.empty((0,128), dtype=np.float32)
+    return keypoints, descriptors
 
 
 # Everything below is PROVIDED. Leave it unchanged.
