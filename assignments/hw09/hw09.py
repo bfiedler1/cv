@@ -32,15 +32,26 @@ def track_points(prev, curr, corners):
     # Pass the previous and current grayscale frames to cv2.calcOpticalFlowPyrLK()
     next_points, status, error = cv2.calcOpticalFlowPyrLK(prev, curr, corners, None, winSize=(15,15))
     prev_points, prev_status, _ = cv2.calcOpticalFlowPyrLK(curr, prev, next_points, None, winSize=(15,15))
-    returned = np.linalg.norm(corners - prev_points, axis=1) < 1
+    returned = np.linalg.norm(corners - prev_points, axis=2).ravel() < 1
     tracked = (status.ravel() == 1) & (prev_status.ravel() == 1) & returned
-    return returned, tracked
+    good_prev_points = corners[tracked]
+    good_next_points = next_points[tracked]
+    return good_prev_points, good_next_points
 
-def find_bad_points(prev_points, next_points, status):
-    pass
+# i dont think i need this anymore cuz its in track points
+# def find_bad_points(prev_points, next_points, status):
+#     pass
 
 def find_bounding_box(prev_box, prev_points, next_points):
-    pass
+    if len(prev_points) == 0:
+        return prev_box
+    # estimated the new boundary box
+    x, y, w, h = prev_box
+    shift = next_points - prev_points
+    x_shift, y_shift = np.median(shift, axis=0).ravel()
+    new_x = x + x_shift
+    new_y = y + y_shift
+    return (new_x, new_y, w, h)
 
 def track_animal(frames):
     """Return one [x, y, width, height] box for each input frame.
@@ -103,11 +114,22 @@ reviewed to verify meaningful use and compliance. Dummy calls do not earn credit
     boxes = np.full((len(frames), 4), np.nan, dtype=float)
     # TODO: detect the moving animal and track it using one allowed flow method.
     # we can use the code on slide 25 for reference but instead we are tracking points of the animal
-    # preprocess
-
-
-
-
-
+    # make fake box for now 
+    box = [181, 337, 270, 225]
+    boxes[0] = box
+    for i in range(1, len(frames)):
+        # Track your feature points
+        # Update your bounding box
+        # Store the updated box in boxes[i]
+        # preprocess
+        prev_frame = preprocess(frames[i - 1])
+        curr_frame = preprocess(frames[i])
+        # call all of our helper functions
+        corners = find_feature_points(prev_frame, box)
+        good_prev, good_next = track_points(prev_frame, curr_frame, corners)
+        new_box = find_bounding_box(box, good_prev, good_next)
+    
+        boxes[i] = new_box
+        box = new_box
 
     return boxes
