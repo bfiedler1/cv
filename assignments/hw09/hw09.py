@@ -9,15 +9,13 @@ import cv2
 import numpy as np
 
 def preprocess(frame):
+    print("Preprocess complete")
     # convert to greyscale
     grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return grey
 
-def find_image(frame):
-    # find initial bounding box for the animal
-    pass
-
 def find_feature_points(frame, box):
+    print("Finding Feature Points")
     # use good features to track
     #corners = cv2.goodFeaturesToTrack(frame, box)
     # instead create a mask to apply in good features to track
@@ -28,7 +26,34 @@ def find_feature_points(frame, box):
     # Keeps points where the smaller eigenvalue of 𝐴𝑇𝐴 is large: the windows where Lucas–Kanade is solvable
     return corners
 
+# instead of locating image from frame, we can use previos and current frame??
+def find_image(prev, curr):
+    print("Locating intiial image")
+    # find initial bounding box for the animal
+    # THE GOAL OF THIS FUNCTION IS TO RETURN AN INTIIAL BOX
+    h, w = prev.shape[:2]
+    # pass through the helper to get corners
+    corners = find_feature_points(prev, (0, 0, w, h))
+    good_prev, good_next = track_points(prev, curr, corners)
+    if (good_next is None or len(good_next) < 3):
+        return None
+
+    # reshape for index error fix? will it work
+    good_next = good_next.reshape(-1, 2)
+
+    x_min = int(good_next[:, 0].min())
+    y_min = int(good_next[:, 1].min())
+    x_max = int(good_next[:, 0].max())
+    y_max = int(good_next[:, 1].max())
+
+    h_updated = y_max - y_min
+    w_updated = x_max - x_min
+
+    return (x_min, y_min, w_updated, h_updated)
+
 def track_points(prev, curr, corners):
+    # Return [np.nan, np.nan, np.nan, np.nan] when no animal has been detected
+
     # Pass the previous and current grayscale frames to cv2.calcOpticalFlowPyrLK()
     next_points, status, error = cv2.calcOpticalFlowPyrLK(prev, curr, corners, None, winSize=(15,15))
     prev_points, prev_status, _ = cv2.calcOpticalFlowPyrLK(curr, prev, next_points, None, winSize=(15,15))
@@ -42,7 +67,9 @@ def track_points(prev, curr, corners):
 # def find_bad_points(prev_points, next_points, status):
 #     pass
 
+# this function should be good
 def find_bounding_box(prev_box, prev_points, next_points):
+    print("Estimating new boundary box")
     if len(prev_points) == 0:
         return prev_box
     # estimated the new boundary box
@@ -115,21 +142,38 @@ reviewed to verify meaningful use and compliance. Dummy calls do not earn credit
     # TODO: detect the moving animal and track it using one allowed flow method.
     # we can use the code on slide 25 for reference but instead we are tracking points of the animal
     # make fake box for now 
-    box = [181, 337, 270, 225]
+    #box = [181, 337, 270, 225]
+    box = None
     boxes[0] = box
+    prev_frame = preprocess(frames[0])
+    print("Loaded prev frame, starting next frame processing")
     for i in range(1, len(frames)):
         # Track your feature points
         # Update your bounding box
         # Store the updated box in boxes[i]
         # preprocess
-        prev_frame = preprocess(frames[i - 1])
+        #prev_frame = preprocess(frames[i - 1])
         curr_frame = preprocess(frames[i])
+        # check id nothing has been found which should be initially, then use find image to establish intial bounding box
+        # then if box is not none, provide all veriables to helper functions find feat points, track pts, and find bounding box
+        if box is None:
+            box = find_image(prev_frame, curr_frame)
+        else:
+            corners = find_feature_points(prev_frame, box)
+            good_prev, good_next = track_points(prev_frame, curr_frame, corners)
+            box = find_bounding_box(box, good_prev, good_next)
         # call all of our helper functions
-        corners = find_feature_points(prev_frame, box)
-        good_prev, good_next = track_points(prev_frame, curr_frame, corners)
-        new_box = find_bounding_box(box, good_prev, good_next)
-    
-        boxes[i] = new_box
-        box = new_box
-
+        # corners = find_feature_points(prev_frame, box)
+        # good_prev, good_next = track_points(prev_frame, curr_frame, corners)
+        # new_box = find_bounding_box(box, good_prev, good_next)
+        if box is not None:
+            # keep the box inside the 1280x685 image - hw 
+            x, y, w, h = box
+            w = min(max(w, 10), 1280)
+            h = min(max(h, 10), 685)
+            x = min(max(x, 0), 1280 - w)
+            y = min(max(y, 0), 685 - h)
+            box = (x, y, w, h)
+            boxes[i] = box
+        prev_frame = curr_frame
     return boxes
