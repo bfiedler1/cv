@@ -1,5 +1,644 @@
 {
-  "points": 0.0,
-  "max_points": 2.5,
-  "reason": "Student code raised error."
+  "points": 1.841819287166834,
+  "mean_credit": 0.6630549433800602,
+  "full_credit_frames": 49,
+  "evaluated_frames": 90,
+  "frames": [
+    {
+      "index": 6,
+      "time_s": 0.6,
+      "valid": false,
+      "iou": 0.0,
+      "credit": 0.0
+    },
+    {
+      "index": 8,
+      "time_s": 0.8,
+      "valid": false,
+      "iou": 0.0,
+      "credit": 0.0
+    },
+    {
+      "index": 10,
+      "time_s": 1.0,
+      "valid": false,
+      "iou": 0.0,
+      "credit": 0.0
+    },
+    {
+      "index": 12,
+      "time_s": 1.2,
+      "valid": false,
+      "iou": 0.0,
+      "credit": 0.0
+    },
+    {
+      "index": 14,
+      "time_s": 1.4,
+      "valid": true,
+      "iou": 0.1913562658310681,
+      "credit": 0.9567813291553404
+    },
+    {
+      "index": 16,
+      "time_s": 1.6,
+      "valid": true,
+      "iou": 0.13052477667572443,
+      "credit": 0.6526238833786221
+    },
+    {
+      "index": 18,
+      "time_s": 1.8,
+      "valid": true,
+      "iou": 0.06192943026697863,
+      "credit": 0.3096471513348931
+    },
+    {
+      "index": 20,
+      "time_s": 2.0,
+      "valid": true,
+      "iou": 0.13759448569471946,
+      "credit": 0.6879724284735973
+    },
+    {
+      "index": 22,
+      "time_s": 2.2,
+      "valid": true,
+      "iou": 0.722325832032868,
+      "credit": 1.0
+    },
+    {
+      "index": 24,
+      "time_s": 2.4,
+      "valid": true,
+      "iou": 0.6026400289486533,
+      "credit": 1.0
+    },
+    {
+      "index": 26,
+      "time_s": 2.6,
+      "valid": true,
+      "iou": 0.22873011131350246,
+      "credit": 1.0
+    },
+    {
+      "index": 28,
+      "time_s": 2.8,
+      "valid": true,
+      "iou": 0.7717134568487013,
+      "credit": 1.0
+    },
+    {
+      "index": 30,
+      "time_s": 3.0,
+      "valid": true,
+      "iou": 0.6274833075155176,
+      "credit": 1.0
+    },
+    {
+      "index": 32,
+      "time_s": 3.2,
+      "valid": true,
+      "iou": 0.8663989222264417,
+      "credit": 1.0
+    },
+    {
+      "index": 34,
+      "time_s": 3.4,
+      "valid": true,
+      "iou": 0.2771165306161913,
+      "credit": 1.0
+    },
+    {
+      "index": 36,
+      "time_s": 3.6,
+      "valid": true,
+      "iou": 0.2892279241028733,
+      "credit": 1.0
+    },
+    {
+      "index": 38,
+      "time_s": 3.8,
+      "valid": true,
+      "iou": 0.5064194667842479,
+      "credit": 1.0
+    },
+    {
+      "index": 40,
+      "time_s": 4.0,
+      "valid": true,
+      "iou": 0.7926595698133576,
+      "credit": 1.0
+    },
+    {
+      "index": 42,
+      "time_s": 4.2,
+      "valid": true,
+      "iou": 0.5471537201673817,
+      "credit": 1.0
+    },
+    {
+      "index": 44,
+      "time_s": 4.4,
+      "valid": true,
+      "iou": 0.3878615611610514,
+      "credit": 1.0
+    },
+    {
+      "index": 46,
+      "time_s": 4.6,
+      "valid": true,
+      "iou": 0.38421755822060943,
+      "credit": 1.0
+    },
+    {
+      "index": 48,
+      "time_s": 4.8,
+      "valid": true,
+      "iou": 0.02264793361227738,
+      "credit": 0.1132396680613869
+    },
+    {
+      "index": 50,
+      "time_s": 5.0,
+      "valid": true,
+      "iou": 0.4803508291700385,
+      "credit": 1.0
+    },
+    {
+      "index": 52,
+      "time_s": 5.2,
+      "valid": true,
+      "iou": 0.1517995032330779,
+      "credit": 0.7589975161653895
+    },
+    {
+      "index": 54,
+      "time_s": 5.4,
+      "valid": true,
+      "iou": 0.28762422527066195,
+      "credit": 1.0
+    },
+    {
+      "index": 56,
+      "time_s": 5.6,
+      "valid": true,
+      "iou": 0.017636239447051068,
+      "credit": 0.08818119723525533
+    },
+    {
+      "index": 58,
+      "time_s": 5.8,
+      "valid": true,
+      "iou": 0.5943273329723012,
+      "credit": 1.0
+    },
+    {
+      "index": 60,
+      "time_s": 6.0,
+      "valid": true,
+      "iou": 0.38515763564863054,
+      "credit": 1.0
+    },
+    {
+      "index": 62,
+      "time_s": 6.2,
+      "valid": true,
+      "iou": 0.348295797070577,
+      "credit": 1.0
+    },
+    {
+      "index": 64,
+      "time_s": 6.4,
+      "valid": true,
+      "iou": 0.2837020693029561,
+      "credit": 1.0
+    },
+    {
+      "index": 66,
+      "time_s": 6.6,
+      "valid": true,
+      "iou": 0.4465931444328647,
+      "credit": 1.0
+    },
+    {
+      "index": 68,
+      "time_s": 6.8,
+      "valid": true,
+      "iou": 0.40299311343811084,
+      "credit": 1.0
+    },
+    {
+      "index": 70,
+      "time_s": 7.0,
+      "valid": true,
+      "iou": 0.3546976968669508,
+      "credit": 1.0
+    },
+    {
+      "index": 72,
+      "time_s": 7.2,
+      "valid": true,
+      "iou": 0.19326851904100062,
+      "credit": 0.9663425952050031
+    },
+    {
+      "index": 74,
+      "time_s": 7.4,
+      "valid": true,
+      "iou": 0.21981742502300844,
+      "credit": 1.0
+    },
+    {
+      "index": 76,
+      "time_s": 7.6,
+      "valid": true,
+      "iou": 0.43575391293443433,
+      "credit": 1.0
+    },
+    {
+      "index": 78,
+      "time_s": 7.8,
+      "valid": true,
+      "iou": 0.34277913774762836,
+      "credit": 1.0
+    },
+    {
+      "index": 80,
+      "time_s": 8.0,
+      "valid": true,
+      "iou": 0.34277913774762836,
+      "credit": 1.0
+    },
+    {
+      "index": 82,
+      "time_s": 8.2,
+      "valid": true,
+      "iou": 0.3316198660641982,
+      "credit": 1.0
+    },
+    {
+      "index": 84,
+      "time_s": 8.4,
+      "valid": true,
+      "iou": 0.326670315824434,
+      "credit": 1.0
+    },
+    {
+      "index": 86,
+      "time_s": 8.6,
+      "valid": true,
+      "iou": 0.33114525165764547,
+      "credit": 1.0
+    },
+    {
+      "index": 88,
+      "time_s": 8.8,
+      "valid": true,
+      "iou": 0.33114525165764547,
+      "credit": 1.0
+    },
+    {
+      "index": 90,
+      "time_s": 9.0,
+      "valid": true,
+      "iou": 0.33740714440592345,
+      "credit": 1.0
+    },
+    {
+      "index": 92,
+      "time_s": 9.2,
+      "valid": true,
+      "iou": 0.4749524385605119,
+      "credit": 1.0
+    },
+    {
+      "index": 94,
+      "time_s": 9.4,
+      "valid": true,
+      "iou": 0.0945954128174129,
+      "credit": 0.4729770640870645
+    },
+    {
+      "index": 96,
+      "time_s": 9.6,
+      "valid": true,
+      "iou": 0.20934048575616276,
+      "credit": 1.0
+    },
+    {
+      "index": 98,
+      "time_s": 9.8,
+      "valid": true,
+      "iou": 0.3499174400991866,
+      "credit": 1.0
+    },
+    {
+      "index": 100,
+      "time_s": 10.0,
+      "valid": true,
+      "iou": 0.33524189610252436,
+      "credit": 1.0
+    },
+    {
+      "index": 102,
+      "time_s": 10.2,
+      "valid": true,
+      "iou": 0.30621988497925606,
+      "credit": 1.0
+    },
+    {
+      "index": 104,
+      "time_s": 10.4,
+      "valid": true,
+      "iou": 0.39640779912463814,
+      "credit": 1.0
+    },
+    {
+      "index": 106,
+      "time_s": 10.6,
+      "valid": true,
+      "iou": 0.3556044661497616,
+      "credit": 1.0
+    },
+    {
+      "index": 108,
+      "time_s": 10.8,
+      "valid": true,
+      "iou": 0.3390329860934405,
+      "credit": 1.0
+    },
+    {
+      "index": 110,
+      "time_s": 11.0,
+      "valid": true,
+      "iou": 0.2185062782688635,
+      "credit": 1.0
+    },
+    {
+      "index": 112,
+      "time_s": 11.2,
+      "valid": true,
+      "iou": 0.011696536294092681,
+      "credit": 0.058482681470463406
+    },
+    {
+      "index": 114,
+      "time_s": 11.4,
+      "valid": true,
+      "iou": 0.07020421237197157,
+      "credit": 0.3510210618598578
+    },
+    {
+      "index": 116,
+      "time_s": 11.6,
+      "valid": true,
+      "iou": 0.28833592349966,
+      "credit": 1.0
+    },
+    {
+      "index": 118,
+      "time_s": 11.8,
+      "valid": true,
+      "iou": 0.48062133606569085,
+      "credit": 1.0
+    },
+    {
+      "index": 120,
+      "time_s": 12.0,
+      "valid": true,
+      "iou": 0.5518838908441812,
+      "credit": 1.0
+    },
+    {
+      "index": 122,
+      "time_s": 12.2,
+      "valid": true,
+      "iou": 0.45781311428604216,
+      "credit": 1.0
+    },
+    {
+      "index": 124,
+      "time_s": 12.4,
+      "valid": true,
+      "iou": 0.46232202413682716,
+      "credit": 1.0
+    },
+    {
+      "index": 126,
+      "time_s": 12.6,
+      "valid": true,
+      "iou": 0.016751999195315607,
+      "credit": 0.08375999597657803
+    },
+    {
+      "index": 128,
+      "time_s": 12.8,
+      "valid": true,
+      "iou": 0.016901872781190007,
+      "credit": 0.08450936390595003
+    },
+    {
+      "index": 130,
+      "time_s": 13.0,
+      "valid": true,
+      "iou": 0.01687265606073851,
+      "credit": 0.08436328030369256
+    },
+    {
+      "index": 132,
+      "time_s": 13.2,
+      "valid": true,
+      "iou": 0.016621254203724525,
+      "credit": 0.08310627101862263
+    },
+    {
+      "index": 134,
+      "time_s": 13.4,
+      "valid": true,
+      "iou": 0.018081194562156025,
+      "credit": 0.09040597281078012
+    },
+    {
+      "index": 136,
+      "time_s": 13.6,
+      "valid": true,
+      "iou": 0.017012342537929808,
+      "credit": 0.08506171268964903
+    },
+    {
+      "index": 138,
+      "time_s": 13.8,
+      "valid": true,
+      "iou": 0.015658344809843697,
+      "credit": 0.07829172404921848
+    },
+    {
+      "index": 140,
+      "time_s": 14.0,
+      "valid": true,
+      "iou": 0.015658344809843697,
+      "credit": 0.07829172404921848
+    },
+    {
+      "index": 142,
+      "time_s": 14.2,
+      "valid": true,
+      "iou": 0.012497350455081048,
+      "credit": 0.06248675227540524
+    },
+    {
+      "index": 144,
+      "time_s": 14.4,
+      "valid": true,
+      "iou": 0.012520510030785033,
+      "credit": 0.06260255015392516
+    },
+    {
+      "index": 146,
+      "time_s": 14.6,
+      "valid": true,
+      "iou": 0.224976617228606,
+      "credit": 1.0
+    },
+    {
+      "index": 148,
+      "time_s": 14.8,
+      "valid": true,
+      "iou": 0.018241340689458048,
+      "credit": 0.09120670344729023
+    },
+    {
+      "index": 150,
+      "time_s": 15.0,
+      "valid": true,
+      "iou": 0.013864060661105715,
+      "credit": 0.06932030330552857
+    },
+    {
+      "index": 152,
+      "time_s": 15.2,
+      "valid": true,
+      "iou": 0.34630353904763855,
+      "credit": 1.0
+    },
+    {
+      "index": 154,
+      "time_s": 15.4,
+      "valid": true,
+      "iou": 0.112679619037561,
+      "credit": 0.563398095187805
+    },
+    {
+      "index": 156,
+      "time_s": 15.6,
+      "valid": true,
+      "iou": 0.09336594093542594,
+      "credit": 0.4668297046771297
+    },
+    {
+      "index": 158,
+      "time_s": 15.8,
+      "valid": true,
+      "iou": 0.07726829659298433,
+      "credit": 0.3863414829649216
+    },
+    {
+      "index": 160,
+      "time_s": 16.0,
+      "valid": true,
+      "iou": 0.17446406371891499,
+      "credit": 0.8723203185945749
+    },
+    {
+      "index": 162,
+      "time_s": 16.2,
+      "valid": true,
+      "iou": 0.13136688696128387,
+      "credit": 0.6568344348064193
+    },
+    {
+      "index": 164,
+      "time_s": 16.4,
+      "valid": true,
+      "iou": 0.032569500130362375,
+      "credit": 0.16284750065181186
+    },
+    {
+      "index": 166,
+      "time_s": 16.6,
+      "valid": true,
+      "iou": 0.02978459387203847,
+      "credit": 0.14892296936019234
+    },
+    {
+      "index": 168,
+      "time_s": 16.8,
+      "valid": true,
+      "iou": 0.0599077846078185,
+      "credit": 0.2995389230390925
+    },
+    {
+      "index": 170,
+      "time_s": 17.0,
+      "valid": true,
+      "iou": 0.42112833347483647,
+      "credit": 1.0
+    },
+    {
+      "index": 172,
+      "time_s": 17.2,
+      "valid": true,
+      "iou": 0.011827469360156252,
+      "credit": 0.05913734680078126
+    },
+    {
+      "index": 174,
+      "time_s": 17.4,
+      "valid": true,
+      "iou": 0.06807928755933158,
+      "credit": 0.3403964377966579
+    },
+    {
+      "index": 176,
+      "time_s": 17.6,
+      "valid": true,
+      "iou": 0.0,
+      "credit": 0.0
+    },
+    {
+      "index": 178,
+      "time_s": 17.8,
+      "valid": true,
+      "iou": 0.026224382737366502,
+      "credit": 0.13112191368683251
+    },
+    {
+      "index": 180,
+      "time_s": 18.0,
+      "valid": true,
+      "iou": 0.024295680130490504,
+      "credit": 0.12147840065245251
+    },
+    {
+      "index": 182,
+      "time_s": 18.2,
+      "valid": true,
+      "iou": 0.019220889114803047,
+      "credit": 0.09610444557401523
+    },
+    {
+      "index": 184,
+      "time_s": 18.4,
+      "valid": true,
+      "iou": 0.26438607710537376,
+      "credit": 1.0
+    }
+  ],
+  "method_calls": {
+    "lk": 364,
+    "farneback": 0,
+    "dis": 0
+  },
+  "seconds": 5.473
 }
