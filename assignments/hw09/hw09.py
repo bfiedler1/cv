@@ -1,165 +1,156 @@
-# i am restarting trying to follow this example on the slides
-
 import cv2
 import numpy as np
 
 '''
+def flow_to_bgr(flow, max_flow=5):
+    # Hue: direction. Saturation: magnitude. White: no motion.
+    magnitude, angle = cv2.cartToPolar(
+        flow[..., 0], flow[..., 1], angleInDegrees=True)
+    hsv = np.zeros(flow.shape[:2] + (3,), np.uint8)
+    hsv[..., 0] = angle / 2
+    hsv[..., 1] = np.clip(255 * magnitude / max_flow, 0, 255)
+    hsv[..., 2] = 255
+    return cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-GREEN, RED = (0, 255, 0), (0, 0, 255)  # OpenCV colors are BGR
+video = cv2.VideoCapture("raccoon_reference.mp4")
+dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
 
-def track_points(gray1, gray2, points):
-    # Lucas-Kanade from gray1 to gray2, then back to gray1.
-    next_points, status, error = cv2.calcOpticalFlowPyrLK(
-        gray1, gray2, points, None, winSize=(15, 15), maxLevel=3)
-    back_points, back_status, _ = cv2.calcOpticalFlowPyrLK(
-        gray2, gray1, next_points, None, winSize=(15, 15), maxLevel=3)
-    # Keep points found in both directions that came back within 1 px.
-    returned = np.linalg.norm(points - back_points, axis=1) < 1
-    tracked = (status.ravel() == 1) & (back_status.ravel() == 1) & returned
-    return next_points, tracked
+_, previous = video.read()
+gray1 = cv2.cvtColor(previous, cv2.COLOR_BGR2GRAY)
 
-video = cv2.VideoCapture("vtest.avi")
-tracks = []  # one track per point: its list of (x, y) positions
-gray1 = None
-frame_count = 0
+# adding some code to write back to same directory
+height, width = previous.shape[:2]
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+
+# farneback_writer = cv2.VideoWriter(
+#     "farneback_output.mp4",
+#     fourcc,
+#     10,
+#     (width, height)
+# )
+
+dis_writer = cv2.VideoWriter(
+    "dis_output.mp4",
+    fourcc,
+    10,
+    (width, height)
+)
+# done 
 
 while True:
-    ok, frame = video.read()
-    if not ok:  # end of the video
+    ok, current = video.read()
+    if not ok:
         break
-    gray2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(current, cv2.COLOR_BGR2GRAY)
 
-    # Move each track's latest point to gray2; keep its last 10 positions.
-    if gray1 is not None and tracks:
-        points = np.float32([track[-1] for track in tracks])
-        next_points, tracked = track_points(gray1, gray2, points)
-        tracks = [(track + [point])[-10:] for track, point, keep
-                  in zip(tracks, next_points, tracked) if keep]
+    # farneback = cv2.calcOpticalFlowFarneback(
+    #     gray1, gray2, None, pyr_scale=0.5, levels=3, winsize=15,
+    #     iterations=3, poly_n=5, poly_sigma=1.2, flags=0)
+    dis_flow = dis.calc(gray1, gray2, None)
 
-    # Every 10 frames, add new points at least 10 px from those already tracked.
-    if frame_count % 10 == 0:
-        mask = np.full(gray2.shape, 255, np.uint8)
-        for track in tracks:
-            cv2.circle(mask, np.int32(track[-1]), 10, 0, -1)
-        corners = cv2.goodFeaturesToTrack(gray2, maxCorners=300, qualityLevel=0.01,
-                                          minDistance=10, blockSize=7, mask=mask)
-        tracks += [[point] for point in corners[:, 0]]
+    mag = np.linalg.norm(dis_flow, axis=2)
+    THRESH = 1.0   # adjust from stage 1
+    mask = (mag > THRESH).astype(np.uint8) * 255
+    cv2.imshow("Mask", mask)
 
-    # Draw tails (green) and current positions (red).
-    for track in tracks:
-        cv2.polylines(frame, [np.int32(track)], False, GREEN, 2, cv2.LINE_AA)
-        cv2.circle(frame, np.int32(track[-1]), 2, RED, -1, cv2.LINE_AA)
-    cv2.imshow("Lucas-Kanade tracking", frame)
-    if cv2.waitKey(100) == 27:  # 100 ms per frame (10 fps); Esc quits
+    # added this code for writeback
+    # farneback_img = flow_to_bgr(farneback)
+    dis_img = flow_to_bgr(dis_flow)
+
+    # farneback_writer.write(farneback_img)
+    dis_writer.write(dis_img)
+    # done
+
+    # Forward flow is defined at pixels in the previous frame.
+    cv2.imshow("Video", previous)
+    # cv2.imshow("Farneback", flow_to_bgr(farneback))
+    cv2.imshow("DIS", flow_to_bgr(dis_flow))
+
+    previous, gray1 = current, gray2
+    if cv2.waitKey(100) == 27:  # Esc quits.
         break
 
-    gray1 = gray2
-    frame_count += 1
+# add code
+#farneback_writer.release()
+
+dis_writer.release()
+# done
 
 video.release()
 cv2.destroyAllWindows()
-
-
 '''
 
+# the goal is to take what i did for the example and make it into frames and track animal
+# reference: https://medium.com/@itberrios6/introduction-to-motion-detection-part-2-6ec3d6b385d4
+
+# create a bunch of helper functions so main workflow makes sense
 def preprocess(frame):
     # convert to greyscale
     grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return grey
 
-# stays the same from the notes in the slides
-def track_points(gray1, gray2, points):
-    next_points, status, _ = cv2.calcOpticalFlowPyrLK(
-        gray1, gray2, points, None, winSize=(15, 15), maxLevel=3)
-    back_points, back_status, _ = cv2.calcOpticalFlowPyrLK(
-        gray2, gray1, next_points, None, winSize=(15, 15), maxLevel=3)
-    returned = np.linalg.norm(points - back_points, axis=1) < 1
-    tracked = (status.ravel() == 1) & (back_status.ravel() == 1) & returned
-    return next_points, tracked
+def get_motion_mask(flow, thresh=1, kernel=np.ones((7, 7), np.uint8)):
+    # this function will get detection mask from optical flow
+    mag = np.linalg.norm(flow, axis=2)
+    motion_mask = np.uint8(mag > thresh) * 255
+    motion_mask = cv2.morphologyEx(motion_mask, cv2.MORPH_OPEN, kernel, iterations=1)
+    motion_mask = cv2.morphologyEx(motion_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
+    return motion_mask
+
+def get_bounding_box(motion_mask):
+    # contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, # cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+    contours, _ = cv2.findContours(motion_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # for cnt in contours:
+        # get area of contour
+        # x,y,w,h = cv2.boundingRect(cnt)
+        # area = w*h
+    detections = []
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        # pick an area that can be the minimum accepted, this can be tweaked after implementation
+        if area > 300:
+            x, y, w, h = cv2.boundingRect(cnt)
+            detections.append([x, y, w, h, area])
+
+    if not detections:
+        return None
+
+    # keep the detection with the largest area
+    best = max(detections, key=lambda d: d[4])
+    x, y, w, h = best[:4]
+    # Each image is 1280 pixels wide and 685 pixels high
+    # clamp to 1280 x 685
+    w = min(max(w, 1), 1280)
+    h = min(max(h, 1), 685)
+    x = min(max(x, 0), 1280 - w)
+    y = min(max(y, 0), 685 - h)
+    return (x, y, w, h)
 
 def track_animal(frames):
+    # now with the video class DIS example, I am going to try and recreate it for frames
     boxes = np.full((len(frames), 4), np.nan, dtype=float)
-    # grey1 is prev
-    grey1 = None
+    dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
+    # get your original frame, but for the purpose of looping get "prev frame"
+    prev_grey = preprocess(frames[0])
+    # previous box is none right now, no bounding box created
     prev_box = None
-    tracks = []
 
-    # loop through frames
+    # replaces the while true, while there are frames do this
     for i in range(1, len(frames)):
-        '''
-        ok, frame = video.read()
-            if not ok:  # end of the video
-                break
-            gray2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-            # Move each track's latest point to gray2; keep its last 10 positions.
-            if gray1 is not None and tracks:
-                points = np.float32([track[-1] for track in tracks])
-                next_points, tracked = track_points(gray1, gray2, points)
-                tracks = [(track + [point])[-10:] for track, point, keep
-                          in zip(tracks, next_points, tracked) if keep]
-        '''
-        grey2 = preprocess(frames[i])
-
-        if (grey1 is not None and tracks):
-            points = np.float32([t[-1] for t in tracks])
-            next_points, tracked = track_points(grey1, grey2, points)
-            tracks = [(t + [p])[-10:] for t, p, keep
-                      in zip(tracks, next_points, tracked) if keep]
-
-        '''
-        # Every 10 frames, add new points at least 10 px from those already tracked.
-            if frame_count % 10 == 0:
-                mask = np.full(gray2.shape, 255, np.uint8)
-                for track in tracks:
-                    cv2.circle(mask, np.int32(track[-1]), 10, 0, -1)
-                corners = cv2.goodFeaturesToTrack(gray2, maxCorners=300, qualityLevel=0.01,
-                                                  minDistance=10, blockSize=7, mask=mask)
-                tracks += [[point] for point in corners[:, 0]]
-        '''
-        # tweak parameters here too instead of every 10 frames, 3 gives a better score
-        if (i % 3 == 0):
-            mask = np.full(grey2.shape, 255, np.uint8)
-            for track in tracks:
-                cv2.circle(mask, tuple(int(v) for v in track[-1]), 10, 0, -1)
-            corners = cv2.goodFeaturesToTrack(grey2, maxCorners=300, qualityLevel=0.01, minDistance=10, blockSize=7, mask=mask)
-            if corners is not None:
-                tracks += [[p] for p in corners[:, 0]]
-
-        # at this point we should have tracks filled with all shifts in movement from the animal
-        # and we should put a box around those points
-
-        # we can track all the points in tracks that moved 
-        # for this part i googled this: in a tracked array of frames cv2 optical flow, how do we find the ones that moved
-        '''
-        displacement = np.linalg.norm(good_new - good_old, axis=1) # Set a minimum pixel threshold to ignore camera 
-        jitter or small noise threshold = 2.0  # in pixels
-        moved_points = good_new[displacement > threshold]
-        '''
-        threshold = 2.0   
-        moving = [t[-1] for t in tracks if len(t) >= 2 and np.linalg.norm(np.subtract(t[-1], t[-2])) > threshold]
-
-        # box the moving points, tweaked from >= 5 and got better score, 
-        if len(moving) >= 3:
-            x_moving = [p[0] for p in moving]
-            y_moving = [p[1] for p in moving]
-            # make a box with the min and max values
-            x0 = min(x_moving)
-            x1 = max(x_moving)
-            y0 = min(y_moving)
-            y1 = max(y_moving)
-
-            # clip to 1280 x 685 size per assignment requirment
-            x0 = max(x0, 0)
-            y0 = max(y0, 0)
-            x1 = min(x1, 1280)
-            y1 = min(y1, 685)
-            prev_box = (x0, y0, x1 - x0, y1 - y0)
-
-        # update previous box
+        # process the current frame
+        curr_grey = preprocess(frames[i])
+        # dis_flow = dis.calc(gray1, gray2, None)
+        dis_flow = dis.calc(prev_grey, curr_grey, None)
+        # get the mask and pass through our boundng box helper
+        flow_mask = get_motion_mask(dis_flow)
+        detected = get_bounding_box(flow_mask)
+        # if not none then make prev box the detected box for next
+        if detected is not None:
+            prev_box = detected
+        # put the box into boxes
         if prev_box is not None:
             boxes[i] = prev_box
-
-        grey1 = grey2
-
+        # move onto next
+        prev_grey = curr_grey
     return boxes
