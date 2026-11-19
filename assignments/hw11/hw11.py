@@ -36,8 +36,9 @@ def reconstruct_sparse(image1, image2, K, dist):
     pts2 = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
     pts1_rect = cv2.undistortPoints(pts1, K, dist, P=K).reshape(-1, 2)
     pts2_rect = cv2.undistortPoints(pts2, K, dist, P=K).reshape(-1, 2)
-    E, _ = cv2.findEssentialMat(pts1_rect, pts2_rect, K, method=cv2.RANSAC)
-    retval, R, t, mask = cv2.recoverPose(E, pts1_rect, pts2_rect)
+    E, mask = cv2.findEssentialMat(pts1_rect, pts2_rect, K, method=cv2.RANSAC)
+    _, R, t, mask = cv2.recoverPose(E, pts1_rect, pts2_rect, mask)
+    
     X = cv2.triangulatePoints(pts1, pts2, pts1_rect, pts2_rect)
     return pts1, pts2, R, t, X
 
@@ -50,7 +51,7 @@ def rectify_pair(image1, image2, K, dist, R, t):
         R1, R2, P1, P2, Q: the outputs of cv2.stereoRectify
     """
     # TODO: cv2.stereoRectify, cv2.initUndistortRectifyMap, cv2.remap. - should be done
-    w, h = image1.shape
+    h, w = image1.shape[:2]
     R1, R2, P1, P2, Q, _, _ = cv2.stereoRectify(K, dist, K, dist, (w, h), R, t, alpha = 1)
     map1 = cv2.initUndistortRectifyMap(K, dist, R1, P1, (w, h), cv2.CV_32FC1)
     map2 = cv2.initUndistortRectifyMap(K, dist, R2, P2, (w, h), cv2.CV_32FC1)
@@ -72,8 +73,10 @@ def reconstruct_dense(rect1, rect2, Q):
     Compute the 3D points with cv2.reprojectImageTo3D and Q.
     '''
     # TODO: cv2.StereoBM or cv2.StereoSGBM, divide by 16, cv2.reprojectImageTo3D.
+    grey1 = cv2.cvtColor(rect1, cv2.COLOR_BGR2GRAY)
+    grey2 = cv2.cvtColor(rect2, cv2.COLOR_BGR2GRAY)
     bm = cv2.StereoBM_create(numDisparities=128, blockSize=15)
-    disp = bm.compute(rect1, rect2).astype(np.float32) / 16
+    disp = bm.compute(grey1, grey2).astype(np.float32) / 16
     disp[disp < 0] = np.nan
     points = cv2.reprojectImageTo3D(disp, Q)
     #colors = left[..., ::-1]  # BGR -> RGB
