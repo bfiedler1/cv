@@ -38,8 +38,11 @@ def reconstruct_sparse(image1, image2, K, dist):
     pts2_rect = cv2.undistortPoints(pts2, K, dist, P=K).reshape(-1, 2)
     E, mask = cv2.findEssentialMat(pts1_rect, pts2_rect, K, method=cv2.RANSAC)
     _, R, t, mask = cv2.recoverPose(E, pts1_rect, pts2_rect, mask)
-    
-    X = cv2.triangulatePoints(pts1, pts2, pts1_rect, pts2_rect)
+    P1 = K @ np.hstack([np.eye(3), np.zeros((3, 1))])
+    P2 = K @ np.hstack([R, t])
+    X4 = cv2.triangulatePoints(P1, P2, pts1.T, pts2.T)
+    X = (X4[:3] / X4[3]).T
+    # X = cv2.triangulatePoints(pts1, pts2, pts1_rect, pts2_rect)
     return pts1, pts2, R, t, X
 
 
