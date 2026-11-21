@@ -37,20 +37,19 @@ def reconstruct_sparse(image1, image2, K, dist):
     pts1_rect = cv2.undistortPoints(pts1, K, dist, P=K).reshape(-1, 2)
     pts2_rect = cv2.undistortPoints(pts2, K, dist, P=K).reshape(-1, 2)
     
-    K = np.asarray(K, dtype=np.float64)
-
-    print("K shape:", K.shape)
-    print("K dtype:", K.dtype)
-    print(K)
+    #K = np.asarray(K, dtype=np.float64)
+    #print("K shape:", K.shape)
+    #print("K dtype:", K.dtype)
+    #print(K)
 
     E, mask = cv2.findEssentialMat(pts1_rect, pts2_rect, cameraMatrix=K, method=cv2.RANSAC, prob=0.999, threshold=1.0)
 
-    print("Essential matrix shape:", E.shape)
+    #print("Essential matrix shape:", E.shape)
 
-    if E.shape != (3, 3):
-        raise ValueError("Unexpected essential matrix dimensions")
+    #if E.shape != (3, 3):
+    #    raise ValueError("Unexpected essential matrix dimensions")
 
-    print("We are getting to find essen mat function")
+    #print("We are getting to find essen mat function")
 
     # somehow failing after here
 
@@ -62,13 +61,13 @@ def reconstruct_sparse(image1, image2, K, dist):
     p1 = pts1_rect[inliers1]
     p2 = pts2_rect[inliers1]
 
-    print("We are getting to recover pose function")
+    #print("We are getting to recover pose function")
 
     P1 = K @ np.hstack([np.eye(3), np.zeros((3, 1))])
     P2 = K @ np.hstack([R, t])
     X4 = cv2.triangulatePoints(P1, P2, p1.T, p2.T)
 
-    print("We are able to triangulate points")
+    #print("We are able to triangulate points")
 
     X = (X4[:3] / X4[3]).T
     # X = cv2.triangulatePoints(pts1, pts2, pts1_rect, pts2_rect)
@@ -124,6 +123,8 @@ def reconstruct_dense(rect1, rect2, Q):
 
     points = cv2.reprojectImageTo3D(disp, Q)
 
-    valid = (disp > 0) & np.isfinite(points).all(axis=2) & (points[..., 2] > 0)
-    #valid = ~np.isnan(disp)
+    # everything is code from the notes except the last valid line
+    # last valid line is checking is disp > 0 - match found
+    valid = ~np.isnan(disp)
+    valid = (disp > 0) 
     return disp, valid, points
