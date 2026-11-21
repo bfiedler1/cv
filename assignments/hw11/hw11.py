@@ -36,11 +36,40 @@ def reconstruct_sparse(image1, image2, K, dist):
     pts2 = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
     pts1_rect = cv2.undistortPoints(pts1, K, dist, P=K).reshape(-1, 2)
     pts2_rect = cv2.undistortPoints(pts2, K, dist, P=K).reshape(-1, 2)
-    E, mask = cv2.findEssentialMat(pts1_rect, pts2_rect, K, method=cv2.RANSAC)
-    _, R, t, mask = cv2.recoverPose(E, pts1_rect, pts2_rect, mask)
+    
+    K = np.asarray(K, dtype=np.float64)
+
+    print("K shape:", K.shape)
+    print("K dtype:", K.dtype)
+    print(K)
+
+    E, mask = cv2.findEssentialMat(pts1_rect, pts2_rect, cameraMatrix=K, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+
+    print("Essential matrix shape:", E.shape)
+
+    if E.shape != (3, 3):
+        raise ValueError("Unexpected essential matrix dimensions")
+
+    print("We are getting to find essen mat function")
+
+    # somehow failing after here
+
+    _, R, t, mask_recover = cv2.recoverPose(E, pts1_rect, pts2_rect, cameraMatrix=K, mask=mask)
+
+    inliers1 = mask_recover.ravel() > 0
+    pts1 = pts1.reshape(-1, 2)[inliers1]
+    pts2 = pts2.reshape(-1, 2)[inliers1]
+    p1 = pts1_rect[inliers1]
+    p2 = pts2_rect[inliers1]
+
+    print("We are getting to recover pose function")
+
     P1 = K @ np.hstack([np.eye(3), np.zeros((3, 1))])
     P2 = K @ np.hstack([R, t])
-    X4 = cv2.triangulatePoints(P1, P2, pts1.T, pts2.T)
+    X4 = cv2.triangulatePoints(P1, P2, p1.T, p2.T)
+
+    print("We are able to triangulate points")
+
     X = (X4[:3] / X4[3]).T
     # X = cv2.triangulatePoints(pts1, pts2, pts1_rect, pts2_rect)
     return pts1, pts2, R, t, X
@@ -76,12 +105,25 @@ def reconstruct_dense(rect1, rect2, Q):
     Compute the 3D points with cv2.reprojectImageTo3D and Q.
     '''
     # TODO: cv2.StereoBM or cv2.StereoSGBM, divide by 16, cv2.reprojectImageTo3D.
+    # switched to sgbm, made more sense
+    # grey1 = cv2.cvtColor(rect1, cv2.COLOR_BGR2GRAY)
+    # grey2 = cv2.cvtColor(rect2, cv2.COLOR_BGR2GRAY)
+    # bm = cv2.StereoBM_create(numDisparities=128, blockSize=15)
+    # disp = bm.compute(grey1, grey2).astype(np.float32) / 16
+    # disp[disp < 0] = np.nan
+    # points = cv2.reprojectImageTo3D(disp, Q)
+    # #colors = left[..., ::-1]  # BGR -> RGB
+    # valid = ~np.isnan(disp)
+    # return disp, valid, points
     grey1 = cv2.cvtColor(rect1, cv2.COLOR_BGR2GRAY)
     grey2 = cv2.cvtColor(rect2, cv2.COLOR_BGR2GRAY)
-    bm = cv2.StereoBM_create(numDisparities=128, blockSize=15)
-    disp = bm.compute(grey1, grey2).astype(np.float32) / 16
+
+    sgbm = cv2.StereoSGBM_create(minDisparity=0, numDisparities=128, blockSize=5, P1=8 * 5 * 5, P2=32 * 5 * 5, uniquenessRatio=10, speckleWindowSize=100, speckleRange=2, disp12MaxDiff=1)
+    disp = sgbm.compute(grey1, grey2).astype(np.float32) / 16.0
     disp[disp < 0] = np.nan
+
     points = cv2.reprojectImageTo3D(disp, Q)
-    #colors = left[..., ::-1]  # BGR -> RGB
-    valid = ~np.isnan(disp)
+
+    valid = (disp > 0) & np.isfinite(points).all(axis=2) & (points[..., 2] > 0)
+    #valid = ~np.isnan(disp)
     return disp, valid, points
